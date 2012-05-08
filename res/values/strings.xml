@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Shaderize</string>
+    <string name="title">Shaderize (%.1ffps)</string>
+    <string name="button_menu">Menu</string>
+    <string name="button_preferences">Edit Preferences..</string>
+    <string name="button_about">Show About Dialog..</string>
+
+</resources>

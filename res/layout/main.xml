@@ -53,7 +53,7 @@
             android:layout_height="fill_parent" />
 
         <LinearLayout
-            android:id="@+id/menu"
+            android:id="@+id/menu_main"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -63,6 +63,14 @@
             android:orientation="vertical"
             android:padding="10dp"
             android:visibility="gone" >
+
+            <Button
+                android:id="@+id/button_shader"
+                style="@style/button"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/button_shader" />
 
             <Button
                 android:id="@+id/button_preferences"
@@ -78,6 +86,42 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/button_about" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/menu_shader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="-2dp"
+            android:background="@drawable/bg_menu"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:visibility="gone" >
+
+            <Button
+                android:id="@+id/button_shader1"
+                style="@style/button"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="Shader 1" />
+
+            <Button
+                android:id="@+id/button_shader2"
+                style="@style/button"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="Shader 2" />
+
+            <Button
+                android:id="@+id/button_shader3"
+                style="@style/button"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Shader 3" />
         </LinearLayout>
     </RelativeLayout>
 

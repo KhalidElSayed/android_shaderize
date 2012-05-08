@@ -4,7 +4,14 @@
     <string name="app_name">Shaderize</string>
     <string name="title">Shaderize (%.1ffps)</string>
     <string name="button_menu">Menu</string>
-    <string name="button_preferences">Edit Preferences..</string>
-    <string name="button_about">Show About Dialog..</string>
+    <string name="button_shader">Select Shader</string>
+    <string name="button_preferences">Edit Preferences</string>
+    <string name="button_about">Show About Dialog</string>
+    <string name="about_title">About Shaderize</string>
+    <string name="about">Full source code for this application is available on GitHub\n
+www.github.com/harism/android_shaderize\n
+\n
+For error reporting, and so on, you can always leave me an email\n
+harism@gmail.com</string>
 
 </resources>

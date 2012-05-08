@@ -11,8 +11,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -20,18 +18,21 @@ public class MainActivity extends Activity {
 
 	private Button mButtonMenu;
 	private GLSurfaceView mGLSurfaceView;
-	private MainRenderer mMainRenderer;
+	private MainMenu mMainMenu;
 
+	private MainRenderer mMainRenderer;
 	private TextView mTextViewInfo;
 	private TextView mTextViewTitle;
-	private Timer mTimerFramesPerSecond;
 
-	private View mViewMenu;
+	private Timer mTimerFramesPerSecond;
 
 	@Override
 	public void onBackPressed() {
-		if (mViewMenu.getVisibility() == View.VISIBLE) {
-			showMenu(false);
+		if (mMainMenu.isVisible(MainMenu.MENU_MAIN)) {
+			mMainMenu.setVisible(MainMenu.MENU_MAIN, false);
+		} else if (mMainMenu.isVisible(MainMenu.MENU_SHADER)) {
+			mMainMenu.setVisible(MainMenu.MENU_MAIN, true);
+			mMainMenu.setVisible(MainMenu.MENU_SHADER, false);
 		} else {
 			super.onBackPressed();
 		}
@@ -47,13 +48,19 @@ public class MainActivity extends Activity {
 
 		mTextViewTitle = (TextView) findViewById(R.id.text_title);
 		mTextViewInfo = (TextView) findViewById(R.id.text_info);
-		mViewMenu = findViewById(R.id.menu);
+		mMainMenu = new MainMenu(findViewById(R.id.menu_main),
+				findViewById(R.id.menu_shader));
 
 		mButtonMenu = (Button) findViewById(R.id.button_menu);
 		mButtonMenu.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View button) {
-				showMenu(mViewMenu.getVisibility() == View.GONE);
+				if (!mMainMenu.isVisible(MainMenu.MENU_MAIN)) {
+					mMainMenu.setVisible(MainMenu.MENU_MAIN, true);
+				} else {
+					mMainMenu.setVisible(MainMenu.MENU_MAIN, false);
+				}
+				mMainMenu.setVisible(MainMenu.MENU_SHADER, false);
 			}
 		});
 
@@ -75,42 +82,14 @@ public class MainActivity extends Activity {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent me) {
-		if (mViewMenu.getVisibility() == View.VISIBLE) {
-			showMenu(false);
+		if (mMainMenu.isVisible(MainMenu.MENU_MAIN)) {
+			mMainMenu.setVisible(MainMenu.MENU_MAIN, false);
+			return true;
+		} else if (mMainMenu.isVisible(MainMenu.MENU_SHADER)) {
+			mMainMenu.setVisible(MainMenu.MENU_SHADER, false);
 			return true;
 		}
 		return super.onTouchEvent(me);
-	}
-
-	private void showMenu(boolean showMenu) {
-		if (!showMenu && mViewMenu.getVisibility() == View.VISIBLE) {
-			AlphaAnimation anim = new AlphaAnimation(1f, 0f);
-			mViewMenu.setAnimation(anim);
-			anim.setDuration(500);
-
-			anim.setAnimationListener(new Animation.AnimationListener() {
-				@Override
-				public void onAnimationEnd(Animation anim) {
-					mViewMenu.setVisibility(View.GONE);
-				}
-
-				@Override
-				public void onAnimationRepeat(Animation anim) {
-				}
-
-				@Override
-				public void onAnimationStart(Animation anim) {
-				}
-			});
-			anim.startNow();
-			mViewMenu.invalidate();
-		} else if (showMenu && mViewMenu.getVisibility() == View.GONE) {
-			mViewMenu.setVisibility(View.VISIBLE);
-			AlphaAnimation anim = new AlphaAnimation(0f, 1f);
-			mViewMenu.setAnimation(anim);
-			anim.setDuration(500);
-			anim.startNow();
-		}
 	}
 
 	private class FramesPerSecondTask extends TimerTask {

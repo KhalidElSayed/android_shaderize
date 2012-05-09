@@ -6,7 +6,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
 
-public class MainMenu {
+public class MenuHandler {
 
 	private static final int STATE_IN = 1;
 	private static final int STATE_OUT = 2;
@@ -14,7 +14,7 @@ public class MainMenu {
 	private View mMenus[];
 	private int mStates[];
 
-	MainMenu(View menus[]) {
+	MenuHandler(View menus[]) {
 		mMenus = menus;
 		mStates = new int[menus.length];
 		for (int i = 0; i < mMenus.length; ++i) {

@@ -6,11 +6,11 @@ import javax.microedition.khronos.opengles.GL10;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
 
-public class MainRenderer implements GLSurfaceView.Renderer {
+public class RendererMain implements GLSurfaceView.Renderer {
 
 	private float mFrameRate;
 	private long mLastRenderTime;
-	private ShaderRenderer mShaderRenderer;
+	private RendererChild mShaderRenderer;
 
 	public float getFramesPerSecond() {
 		return 1000f / mFrameRate;
@@ -35,7 +35,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 	}
 
-	public void setShaderRenderer(ShaderRenderer shaderRenderer) {
+	public void setShaderRenderer(RendererChild shaderRenderer) {
 		if (mShaderRenderer != null) {
 			mShaderRenderer.onDestroy();
 		}

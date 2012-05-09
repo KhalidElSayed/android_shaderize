@@ -1,6 +1,6 @@
 package fi.harism.shaderize;
 
-public interface ShaderRenderer {
+public interface RendererChild {
 	public void onDestroy();
 
 	public void onDrawFrame();

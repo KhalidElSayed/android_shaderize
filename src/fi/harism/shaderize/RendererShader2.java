@@ -2,7 +2,7 @@ package fi.harism.shaderize;
 
 import android.opengl.GLES20;
 
-public class Shader1 implements ShaderRenderer {
+public class RendererShader2 implements RendererChild {
 
 	@Override
 	public void onDestroy() {
@@ -10,7 +10,7 @@ public class Shader1 implements ShaderRenderer {
 
 	@Override
 	public void onDrawFrame() {
-		GLES20.glClearColor(.5f, .2f, .8f, 1f);
+		GLES20.glClearColor(.8f, .5f, .2f, 1f);
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 	}
 

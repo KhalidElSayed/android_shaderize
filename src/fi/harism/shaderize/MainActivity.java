@@ -27,15 +27,15 @@ public class MainActivity extends Activity {
 
 	private final static StructShader SHADERS[] = {
 			new StructShader(R.string.shader_1_name, R.string.shader_1_info,
-					R.layout.prefs_shader1, Shader1.class.getName()),
+					R.layout.prefs_shader1, RendererShader1.class.getName()),
 			new StructShader(R.string.shader_2_name, R.string.shader_2_info,
-					R.layout.prefs_shader2, Shader2.class.getName()) };
+					R.layout.prefs_shader2, RendererShader2.class.getName()) };
 
 	// private Button mButtonMenu;
 	private GLSurfaceView mGLSurfaceView;
-	private MainMenu mMainMenu;
+	private RendererMain mMainRenderer;
 
-	private MainRenderer mMainRenderer;
+	private MenuHandler mMenuHandler;
 	private TextView mTextViewInfo;
 	private TextView mTextViewTitle;
 
@@ -43,8 +43,8 @@ public class MainActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
-		if (mMainMenu.isVisible(MENU_ID_MAIN)) {
-			mMainMenu.setVisible(MENU_ID_MAIN, false, true);
+		if (mMenuHandler.isVisible(MENU_ID_MAIN)) {
+			mMenuHandler.setVisible(MENU_ID_MAIN, false, true);
 
 			Button buttonMenu = (Button) findViewById(R.id.button_menu);
 			AlphaAnimation animIn = new AlphaAnimation(0f, 1f);
@@ -74,12 +74,12 @@ public class MainActivity extends Activity {
 			animOut.startNow();
 			buttonBack.invalidate();
 
-		} else if (mMainMenu.isVisible(MENU_ID_SHADER)) {
-			mMainMenu.setVisible(MENU_ID_SHADER, false, true);
-			mMainMenu.setVisible(MENU_ID_MAIN, true, false);
-		} else if (mMainMenu.isVisible(MENU_ID_PREFS)) {
-			mMainMenu.setVisible(MENU_ID_PREFS, false, true);
-			mMainMenu.setVisible(MENU_ID_MAIN, true, false);
+		} else if (mMenuHandler.isVisible(MENU_ID_SHADER)) {
+			mMenuHandler.setVisible(MENU_ID_SHADER, false, true);
+			mMenuHandler.setVisible(MENU_ID_MAIN, true, false);
+		} else if (mMenuHandler.isVisible(MENU_ID_PREFS)) {
+			mMenuHandler.setVisible(MENU_ID_PREFS, false, true);
+			mMenuHandler.setVisible(MENU_ID_MAIN, true, false);
 		} else {
 			super.onBackPressed();
 		}
@@ -100,7 +100,7 @@ public class MainActivity extends Activity {
 		for (int i = 0; i < menus.length; ++i) {
 			menus[i] = findViewById(MENU_IDS[i]);
 		}
-		mMainMenu = new MainMenu(menus);
+		mMenuHandler = new MenuHandler(menus);
 
 		/**
 		 * Setup Menu -button.
@@ -109,10 +109,10 @@ public class MainActivity extends Activity {
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View button) {
-				if (mMainMenu.isVisible()) {
+				if (mMenuHandler.isVisible()) {
 					onBackPressed();
 				} else {
-					mMainMenu.setVisible(MENU_ID_MAIN, true, true);
+					mMenuHandler.setVisible(MENU_ID_MAIN, true, true);
 
 					Button buttonBack = (Button) findViewById(R.id.button_back);
 					AlphaAnimation animIn = new AlphaAnimation(0f, 1f);
@@ -148,7 +148,7 @@ public class MainActivity extends Activity {
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View button) {
-				if (mMainMenu.isVisible()) {
+				if (mMenuHandler.isVisible()) {
 					onBackPressed();
 				}
 			}
@@ -161,16 +161,16 @@ public class MainActivity extends Activity {
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mMainMenu.setVisible(MENU_ID_MAIN, false, false);
-				mMainMenu.setVisible(MENU_ID_SHADER, true, true);
+				mMenuHandler.setVisible(MENU_ID_MAIN, false, false);
+				mMenuHandler.setVisible(MENU_ID_SHADER, true, true);
 			}
 		});
 		button = (Button) findViewById(R.id.button_prefs);
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mMainMenu.setVisible(MENU_ID_MAIN, false, false);
-				mMainMenu.setVisible(MENU_ID_PREFS, true, true);
+				mMenuHandler.setVisible(MENU_ID_MAIN, false, false);
+				mMenuHandler.setVisible(MENU_ID_PREFS, true, true);
 			}
 		});
 		button = (Button) findViewById(R.id.button_about);
@@ -199,7 +199,7 @@ public class MainActivity extends Activity {
 			viewGroup.addView(tv);
 		}
 
-		mMainRenderer = new MainRenderer();
+		mMainRenderer = new RendererMain();
 
 		mGLSurfaceView = (GLSurfaceView) findViewById(R.id.glsurfaceview);
 		mGLSurfaceView.setEGLContextClientVersion(2);
@@ -239,8 +239,8 @@ public class MainActivity extends Activity {
 				if (shader.mTitleId == id) {
 
 					try {
-						ShaderRenderer renderer = (ShaderRenderer) Class
-								.forName(shader.mClassName).newInstance();
+						RendererChild renderer = (RendererChild) Class.forName(
+								shader.mClassName).newInstance();
 						mTextViewInfo.setText(shader.mInfoId);
 
 						ViewGroup scroll = (ViewGroup) findViewById(R.id.menu_prefs_content);

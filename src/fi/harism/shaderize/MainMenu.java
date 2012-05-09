@@ -1,74 +1,75 @@
 package fi.harism.shaderize;
 
-import android.app.Dialog;
 import android.view.View;
-import android.view.Window;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.Button;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
 
 public class MainMenu {
-
-	public static final int MENU_MAIN = 0;
-	public static final int MENU_SHADER = 1;
 
 	private static final int STATE_IN = 1;
 	private static final int STATE_OUT = 2;
 
-	private Button mButtonAbout;
-	private Button mButtonPreferences;
+	private View mMenus[];
+	private int mStates[];
 
-	private Button mButtonShader;
-	private final View mMenus[] = new View[2];
-	private final int mStates[] = { STATE_OUT, STATE_OUT };
-
-	MainMenu(View mainMenu, View shaderMenu) {
-		mMenus[MENU_MAIN] = mainMenu;
-		mMenus[MENU_SHADER] = shaderMenu;
-		for (View view : mMenus) {
-			view.setVisibility(View.GONE);
+	MainMenu(View menus[]) {
+		mMenus = menus;
+		mStates = new int[menus.length];
+		for (int i = 0; i < mMenus.length; ++i) {
+			mMenus[i].setVisibility(View.GONE);
+			mStates[i] = STATE_OUT;
 		}
+	}
 
-		mButtonAbout = (Button) mainMenu.findViewById(R.id.button_about);
-		mButtonAbout.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Dialog dialog = new Dialog(mMenus[0].getContext());
-				dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-				dialog.setContentView(R.layout.about);
-				dialog.show();
-				setVisible(MENU_MAIN, false);
+	public void hide() {
+		for (int i = 0; i < mStates.length; ++i) {
+			if (mStates[i] == STATE_IN) {
+				setVisible(i, false, true);
 			}
-		});
+		}
+	}
 
-		mButtonPreferences = (Button) mainMenu
-				.findViewById(R.id.button_preferences);
-
-		mButtonShader = (Button) mainMenu.findViewById(R.id.button_shader);
-		mButtonShader.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				setVisible(MENU_MAIN, false);
-				setVisible(MENU_SHADER, true);
-			}
-		});
+	public boolean isVisible() {
+		boolean visible = false;
+		for (int state : mStates) {
+			visible |= state == STATE_IN;
+		}
+		return visible;
 	}
 
 	public boolean isVisible(int menu) {
 		return mStates[menu] == STATE_IN;
 	}
 
-	public void setVisible(final int menu, boolean visible) {
+	public void setVisible(final int menu, boolean visible, boolean fadeRight) {
 		if (visible && mStates[menu] != STATE_IN) {
 			mStates[menu] = STATE_IN;
 			mMenus[menu].setVisibility(View.VISIBLE);
-			AlphaAnimation anim = new AlphaAnimation(0f, 1f);
+
+			AnimationSet anim = new AnimationSet(true);
+			anim.addAnimation(new AlphaAnimation(0f, 1f));
+			if (fadeRight) {
+				anim.addAnimation(new TranslateAnimation(100f, 0f, 0f, 0f));
+			} else {
+				anim.addAnimation(new TranslateAnimation(-100f, 0f, 0f, 0f));
+			}
+
 			mMenus[menu].setAnimation(anim);
 			anim.setDuration(500);
 			anim.startNow();
 		} else if (!visible && mStates[menu] != STATE_OUT) {
 			mStates[menu] = STATE_OUT;
-			AlphaAnimation anim = new AlphaAnimation(1f, 0f);
+
+			AnimationSet anim = new AnimationSet(true);
+			anim.addAnimation(new AlphaAnimation(1f, 0f));
+			if (fadeRight) {
+				anim.addAnimation(new TranslateAnimation(0f, 100f, 0f, 0f));
+			} else {
+				anim.addAnimation(new TranslateAnimation(0f, -100f, 0f, 0f));
+			}
+
 			mMenus[menu].setAnimation(anim);
 			anim.setDuration(500);
 			anim.setAnimationListener(new Animation.AnimationListener() {

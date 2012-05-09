@@ -13,7 +13,7 @@
 
         <TextView
             android:id="@+id/text_title"
-            style="@style/textShadow"
+            style="@style/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -23,12 +23,11 @@
 
         <TextView
             android:id="@+id/text_info"
-            style="@style/text"
+            style="@style/text_red"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@id/text_title"
-            android:text="Current shader info text."
             android:textSize="12sp" />
 
         <Button
@@ -39,6 +38,16 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:text="@string/button_menu" />
+
+        <Button
+            android:id="@+id/button_back"
+            style="@style/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="@string/button_back"
+            android:visibility="gone" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -52,77 +61,11 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
 
-        <LinearLayout
-            android:id="@+id/menu_main"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="-2dp"
-            android:background="@drawable/bg_menu"
-            android:orientation="vertical"
-            android:padding="10dp"
-            android:visibility="gone" >
+        <include layout="@layout/menu_main" />
 
-            <Button
-                android:id="@+id/button_shader"
-                style="@style/button"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:text="@string/button_shader" />
+        <include layout="@layout/menu_prefs" />
 
-            <Button
-                android:id="@+id/button_preferences"
-                style="@style/button"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:text="@string/button_preferences" />
-
-            <Button
-                android:id="@+id/button_about"
-                style="@style/button"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/button_about" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/menu_shader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="-2dp"
-            android:background="@drawable/bg_menu"
-            android:orientation="vertical"
-            android:padding="10dp"
-            android:visibility="gone" >
-
-            <Button
-                android:id="@+id/button_shader1"
-                style="@style/button"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:text="Shader 1" />
-
-            <Button
-                android:id="@+id/button_shader2"
-                style="@style/button"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:text="Shader 2" />
-
-            <Button
-                android:id="@+id/button_shader3"
-                style="@style/button"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Shader 3" />
-        </LinearLayout>
+        <include layout="@layout/menu_shader" />
     </RelativeLayout>
 
 </RelativeLayout>

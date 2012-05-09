@@ -1,17 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Common strings -->
     <string name="app_name">Shaderize</string>
     <string name="title">Shaderize (%.1ffps)</string>
+
+    <!-- Button texts -->
     <string name="button_menu">Menu</string>
+    <string name="button_back">Back</string>
     <string name="button_shader">Select Shader</string>
     <string name="button_preferences">Edit Preferences</string>
-    <string name="button_about">Show About Dialog</string>
+    <string name="button_about">About Shaderize</string>
+
+    <!-- About dialog -->
     <string name="about_title">About Shaderize</string>
-    <string name="about">Full source code for this application is available on GitHub\n
+    <string name="about_content">Full source code for this application is available on GitHub\n
 www.github.com/harism/android_shaderize\n
 \n
 For error reporting, and so on, you can always leave me an email\n
 harism@gmail.com</string>
+    <string name="about_footer">© Harri Smått, 2012</string>
+
+    <!-- Menu titles -->
+    <string name="menu_main_title">Main Menu</string>
+    <string name="menu_shader_title">Select Shader</string>
+    <string name="menu_prefs_global_title">Global Preferences</string>
+    <string name="menu_prefs_shader_title">Shader Preferences</string>
+
+    <!-- Shaders -->
+    <string name="shader_1_name">Shader 1</string>
+    <string name="shader_1_info">Shader 1 description.</string>
+    <string name="shader_2_name">Shader 2 Name</string>
+    <string name="shader_2_info">Shader 2 longer description.</string>
 
 </resources>

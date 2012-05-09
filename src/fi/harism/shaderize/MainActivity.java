@@ -4,19 +4,34 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Looper;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
-	private Button mButtonMenu;
+	private final static int MENU_ID_MAIN = 0;
+	private final static int MENU_ID_PREFS = 2;
+	private final static int MENU_ID_SHADER = 1;
+	private final static int MENU_IDS[] = { R.id.menu_main, R.id.menu_shader,
+			R.id.menu_prefs };
+
+	private final static StructShader SHADERS[] = {
+			new StructShader(R.string.shader_1_name, R.string.shader_1_info,
+					R.layout.prefs_shader1, Shader1.class.getName()),
+			new StructShader(R.string.shader_2_name, R.string.shader_2_info,
+					R.layout.prefs_shader2, Shader2.class.getName()) };
+
+	// private Button mButtonMenu;
 	private GLSurfaceView mGLSurfaceView;
 	private MainMenu mMainMenu;
 
@@ -28,11 +43,43 @@ public class MainActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
-		if (mMainMenu.isVisible(MainMenu.MENU_MAIN)) {
-			mMainMenu.setVisible(MainMenu.MENU_MAIN, false);
-		} else if (mMainMenu.isVisible(MainMenu.MENU_SHADER)) {
-			mMainMenu.setVisible(MainMenu.MENU_MAIN, true);
-			mMainMenu.setVisible(MainMenu.MENU_SHADER, false);
+		if (mMainMenu.isVisible(MENU_ID_MAIN)) {
+			mMainMenu.setVisible(MENU_ID_MAIN, false, true);
+
+			Button buttonMenu = (Button) findViewById(R.id.button_menu);
+			AlphaAnimation animIn = new AlphaAnimation(0f, 1f);
+			animIn.setDuration(500);
+			buttonMenu.setAnimation(animIn);
+			buttonMenu.setVisibility(View.VISIBLE);
+			animIn.startNow();
+
+			final Button buttonBack = (Button) findViewById(R.id.button_back);
+			AlphaAnimation animOut = new AlphaAnimation(1f, 0f);
+			animOut.setAnimationListener(new Animation.AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation anim) {
+					buttonBack.setVisibility(View.GONE);
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation anim) {
+				}
+
+				@Override
+				public void onAnimationStart(Animation anim) {
+				}
+			});
+			animOut.setDuration(500);
+			buttonBack.setAnimation(animOut);
+			animOut.startNow();
+			buttonBack.invalidate();
+
+		} else if (mMainMenu.isVisible(MENU_ID_SHADER)) {
+			mMainMenu.setVisible(MENU_ID_SHADER, false, true);
+			mMainMenu.setVisible(MENU_ID_MAIN, true, false);
+		} else if (mMainMenu.isVisible(MENU_ID_PREFS)) {
+			mMainMenu.setVisible(MENU_ID_PREFS, false, true);
+			mMainMenu.setVisible(MENU_ID_MAIN, true, false);
 		} else {
 			super.onBackPressed();
 		}
@@ -48,23 +95,112 @@ public class MainActivity extends Activity {
 
 		mTextViewTitle = (TextView) findViewById(R.id.text_title);
 		mTextViewInfo = (TextView) findViewById(R.id.text_info);
-		mMainMenu = new MainMenu(findViewById(R.id.menu_main),
-				findViewById(R.id.menu_shader));
 
-		mButtonMenu = (Button) findViewById(R.id.button_menu);
-		mButtonMenu.setOnClickListener(new View.OnClickListener() {
+		View menus[] = new View[MENU_IDS.length];
+		for (int i = 0; i < menus.length; ++i) {
+			menus[i] = findViewById(MENU_IDS[i]);
+		}
+		mMainMenu = new MainMenu(menus);
+
+		/**
+		 * Setup Menu -button.
+		 */
+		Button button = (Button) findViewById(R.id.button_menu);
+		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View button) {
-				if (!mMainMenu.isVisible(MainMenu.MENU_MAIN)) {
-					mMainMenu.setVisible(MainMenu.MENU_MAIN, true);
+				if (mMainMenu.isVisible()) {
+					onBackPressed();
 				} else {
-					mMainMenu.setVisible(MainMenu.MENU_MAIN, false);
+					mMainMenu.setVisible(MENU_ID_MAIN, true, true);
+
+					Button buttonBack = (Button) findViewById(R.id.button_back);
+					AlphaAnimation animIn = new AlphaAnimation(0f, 1f);
+					animIn.setDuration(500);
+					buttonBack.setAnimation(animIn);
+					buttonBack.setVisibility(View.VISIBLE);
+					animIn.startNow();
+
+					final Button buttonMenu = (Button) findViewById(R.id.button_menu);
+					AlphaAnimation animOut = new AlphaAnimation(1f, 0f);
+					animOut.setAnimationListener(new Animation.AnimationListener() {
+						@Override
+						public void onAnimationEnd(Animation anim) {
+							buttonMenu.setVisibility(View.GONE);
+						}
+
+						@Override
+						public void onAnimationRepeat(Animation anim) {
+						}
+
+						@Override
+						public void onAnimationStart(Animation anim) {
+						}
+					});
+					animOut.setDuration(500);
+					buttonMenu.setAnimation(animOut);
+					animOut.startNow();
+					buttonMenu.invalidate();
 				}
-				mMainMenu.setVisible(MainMenu.MENU_SHADER, false);
+			}
+		});
+		button = (Button) findViewById(R.id.button_back);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View button) {
+				if (mMainMenu.isVisible()) {
+					onBackPressed();
+				}
 			}
 		});
 
+		/**
+		 * Setup Main menu buttons.
+		 */
+		button = (Button) findViewById(R.id.button_shader);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mMainMenu.setVisible(MENU_ID_MAIN, false, false);
+				mMainMenu.setVisible(MENU_ID_SHADER, true, true);
+			}
+		});
+		button = (Button) findViewById(R.id.button_prefs);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mMainMenu.setVisible(MENU_ID_MAIN, false, false);
+				mMainMenu.setVisible(MENU_ID_PREFS, true, true);
+			}
+		});
+		button = (Button) findViewById(R.id.button_about);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Dialog dialog = new Dialog(MainActivity.this);
+				dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+				dialog.setContentView(R.layout.about);
+				dialog.show();
+				onBackPressed();
+			}
+		});
+
+		/**
+		 * Generate shader menu.
+		 */
+		MenuShaderListener menuShaderListener = new MenuShaderListener();
+		ViewGroup viewGroup = (ViewGroup) findViewById(R.id.menu_shader_content);
+		for (StructShader shader : SHADERS) {
+			TextView tv = (TextView) getLayoutInflater().inflate(
+					R.layout.menu_button, viewGroup, false);
+			tv.setId(shader.mTitleId);
+			tv.setText(shader.mTitleId);
+			tv.setOnClickListener(menuShaderListener);
+			viewGroup.addView(tv);
+		}
+
 		mMainRenderer = new MainRenderer();
+
 		mGLSurfaceView = (GLSurfaceView) findViewById(R.id.glsurfaceview);
 		mGLSurfaceView.setEGLContextClientVersion(2);
 		mGLSurfaceView.setRenderer(mMainRenderer);
@@ -80,18 +216,6 @@ public class MainActivity extends Activity {
 		mTimerFramesPerSecond.cancel();
 	}
 
-	@Override
-	public boolean onTouchEvent(MotionEvent me) {
-		if (mMainMenu.isVisible(MainMenu.MENU_MAIN)) {
-			mMainMenu.setVisible(MainMenu.MENU_MAIN, false);
-			return true;
-		} else if (mMainMenu.isVisible(MainMenu.MENU_SHADER)) {
-			mMainMenu.setVisible(MainMenu.MENU_SHADER, false);
-			return true;
-		}
-		return super.onTouchEvent(me);
-	}
-
 	private class FramesPerSecondTask extends TimerTask {
 		@Override
 		public void run() {
@@ -103,6 +227,50 @@ public class MainActivity extends Activity {
 			String text = getResources().getString(R.string.title,
 					mMainRenderer.getFramesPerSecond());
 			mTextViewTitle.setText(text);
+		}
+	}
+
+	private class MenuShaderListener implements View.OnClickListener {
+
+		@Override
+		public void onClick(View v) {
+			int id = v.getId();
+			for (StructShader shader : SHADERS) {
+				if (shader.mTitleId == id) {
+
+					try {
+						ShaderRenderer renderer = (ShaderRenderer) Class
+								.forName(shader.mClassName).newInstance();
+						mTextViewInfo.setText(shader.mInfoId);
+
+						ViewGroup scroll = (ViewGroup) findViewById(R.id.menu_prefs_content);
+						scroll.removeAllViews();
+						View vvv = getLayoutInflater().inflate(shader.mPrefsId,
+								scroll, false);
+						scroll.addView(vvv);
+
+						mMainRenderer.setShaderRenderer(renderer);
+					} catch (Exception ex) {
+					}
+
+					return;
+				}
+			}
+		}
+	}
+
+	private static class StructShader {
+		public String mClassName;
+		public int mInfoId;
+		public int mPrefsId;
+		public int mTitleId;
+
+		public StructShader(int titleId, int infoId, int prefsId,
+				String className) {
+			mTitleId = titleId;
+			mInfoId = infoId;
+			mPrefsId = prefsId;
+			mClassName = className;
 		}
 	}
 }

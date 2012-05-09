@@ -131,15 +131,18 @@ public abstract class Obj {
 	 */
 	public void updateMatrices(float[] viewM, float[] projM) {
 		if (mRecalculateModelM) {
-			android.opengl.Matrix.multiplyMM(mModelM, 0, mScaleM, 0, mRotateM, 0);
-			android.opengl.Matrix.multiplyMM(mModelM, 0, mTranslateM, 0, mModelM, 0);
+			android.opengl.Matrix.multiplyMM(mModelM, 0, mScaleM, 0, mRotateM,
+					0);
+			android.opengl.Matrix.multiplyMM(mModelM, 0, mTranslateM, 0,
+					mModelM, 0);
 			mRecalculateModelM = false;
 		}
 
 		// Add local model matrix to global model-view matrix.
 		android.opengl.Matrix.multiplyMM(mModelViewM, 0, viewM, 0, mModelM, 0);
 		// Apply projection matrix to global model-view matrix.
-		android.opengl.Matrix.multiplyMM(mModelViewProjM, 0, projM, 0, mModelViewM, 0);
+		android.opengl.Matrix.multiplyMM(mModelViewProjM, 0, projM, 0,
+				mModelViewM, 0);
 		// Fast inverse-transpose matrix calculation.
 		Matrix.invTransposeM(mNormalM, 0, mModelViewM, 0);
 	}

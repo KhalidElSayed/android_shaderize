@@ -24,11 +24,12 @@ public class RendererMain implements GLSurfaceView.Renderer {
 
 	private final ObjCamera mObjCamera = new ObjCamera();
 	private final ObjScene mObjScene = new ObjScene();
+	private RendererChild mRendererChild;
+
+	private RendererChild mRendererChildNext;
+
 	private final Shader mShader = new Shader();
-
 	private final boolean mShaderCompilerSupported[] = new boolean[1];
-
-	private RendererChild mShaderRenderer;
 	private int mWidth, mHeight;
 
 	public RendererMain() {
@@ -56,6 +57,7 @@ public class RendererMain implements GLSurfaceView.Renderer {
 		mFrameRate = mFrameRate * 0.4f + (currentTime - mLastRenderTime) * 0.6f;
 		mLastRenderTime = currentTime;
 
+		mObjCamera.animate();
 		float viewM[] = mObjCamera.getViewM();
 		float projM[] = mObjCamera.getProjM();
 		Vector<Obj> objs = mObjScene.getBoxes();
@@ -63,8 +65,24 @@ public class RendererMain implements GLSurfaceView.Renderer {
 			obj.updateMatrices(viewM, projM);
 		}
 
-		if (mShaderRenderer != null) {
-			mShaderRenderer.onDrawFrame(mFbo, mObjScene);
+		if (mRendererChildNext != null) {
+			if (mRendererChild != null) {
+				mRendererChild.onDestroy();
+			}
+			mRendererChild = mRendererChildNext;
+			mRendererChildNext = null;
+
+			try {
+				mRendererChild.onSurfaceCreated(mContext);
+				mRendererChild.onSurfaceChanged(mWidth, mHeight);
+			} catch (Exception ex) {
+				showToast(ex.getMessage());
+				mRendererChild = null;
+			}
+		}
+
+		if (mRendererChild != null) {
+			mRendererChild.onDrawFrame(mFbo, mObjScene);
 		}
 
 		// Copy FBO to screen buffer.
@@ -84,7 +102,8 @@ public class RendererMain implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		mWidth = width;
 		mHeight = height;
-		mFbo.init(mWidth, mHeight, 1);
+		mFbo.init(mWidth, mHeight, 2, true, false);
+		mObjCamera.setViewSize(mWidth, mHeight);
 	}
 
 	@Override
@@ -115,10 +134,7 @@ public class RendererMain implements GLSurfaceView.Renderer {
 	}
 
 	public void setShaderRenderer(RendererChild shaderRenderer) {
-		if (mShaderRenderer != null) {
-			mShaderRenderer.onDestroy();
-		}
-		mShaderRenderer = shaderRenderer;
+		mRendererChildNext = shaderRenderer;
 	}
 
 	public void showToast(final String text) {

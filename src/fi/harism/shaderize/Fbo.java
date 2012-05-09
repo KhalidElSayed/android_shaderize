@@ -70,7 +70,7 @@ public final class Fbo {
 
 	/**
 	 * Initializes FBO with given parameters. Calls simply init(int, int, int,
-	 * boolean) without render buffer generations.
+	 * boolean, boolean) without render buffer generations.
 	 * 
 	 * @param width
 	 *            Width in pixels.

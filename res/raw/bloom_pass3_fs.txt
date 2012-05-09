@@ -1,0 +1,14 @@
+
+precision mediump float;
+
+uniform sampler2D sTextureSource;
+uniform sampler2D sTextureBloom;
+varying vec2 vTextureCoord;
+
+void main() {
+	vec4 colorSource = texture2D(sTextureSource, vTextureCoord);
+	vec4 colorBloom = texture2D(sTextureBloom, vTextureCoord);
+	/* This is not correct way to apply bloom. */
+	gl_FragColor = colorSource  + colorBloom;
+	gl_FragColor.a = 1.0;
+}

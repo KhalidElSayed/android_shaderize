@@ -80,7 +80,7 @@ public final class ObjBox extends Obj {
 	public void setColor(int face, float r, float g, float b) {
 		int i = face * VERTICES_PER_FACE * FLOATS_PER_VERTEX;
 		for (int j = 0; j < VERTICES_PER_FACE; ++j) {
-			mColorBuffer.put(i + (j * FLOATS_PER_VERTEX), r);
+			mColorBuffer.put(i + (j * FLOATS_PER_VERTEX) + 0, r);
 			mColorBuffer.put(i + (j * FLOATS_PER_VERTEX) + 1, g);
 			mColorBuffer.put(i + (j * FLOATS_PER_VERTEX) + 2, b);
 		}
@@ -89,7 +89,7 @@ public final class ObjBox extends Obj {
 	private void setNormal(int face, float x, float y, float z) {
 		int i = face * VERTICES_PER_FACE * FLOATS_PER_VERTEX;
 		for (int j = 0; j < VERTICES_PER_FACE; ++j) {
-			mNormalBuffer.put(i + (j * FLOATS_PER_VERTEX), x);
+			mNormalBuffer.put(i + (j * FLOATS_PER_VERTEX) + 0, x);
 			mNormalBuffer.put(i + (j * FLOATS_PER_VERTEX) + 1, y);
 			mNormalBuffer.put(i + (j * FLOATS_PER_VERTEX) + 2, z);
 		}

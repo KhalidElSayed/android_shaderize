@@ -37,4 +37,7 @@ harism@gmail.com</string>
     <!-- Prefererence keys -->
     <string name="prefs_key_shader">prefs_key_shader</string>
 
+    <!-- Error strings -->
+    <string name="error_shader_compiler">Error, shader compiler not supported.</string>
+
 </resources>

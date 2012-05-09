@@ -211,6 +211,7 @@ public class MainActivity extends Activity {
 		}
 
 		mMainRenderer = new RendererMain();
+		mMainRenderer.setContext(this);
 
 		mGLSurfaceView = (GLSurfaceView) findViewById(R.id.glsurfaceview);
 		mGLSurfaceView.setEGLContextClientVersion(2);
@@ -235,6 +236,7 @@ public class MainActivity extends Activity {
 	public void onDestroy() {
 		super.onDestroy();
 		mTimerFramesPerSecond.cancel();
+		mMainRenderer.setContext(null);
 	}
 
 	private void setShader(StructShader shader) throws Exception {

@@ -2,7 +2,7 @@ package fi.harism.shaderize;
 
 import android.opengl.GLES20;
 
-public class RendererShader2 implements RendererChild {
+public class RendererBloom implements RendererChild {
 
 	@Override
 	public void onDestroy() {

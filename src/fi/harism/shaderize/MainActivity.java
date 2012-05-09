@@ -5,6 +5,7 @@ import java.util.TimerTask;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Looper;
@@ -16,6 +17,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -26,10 +28,12 @@ public class MainActivity extends Activity {
 			R.id.menu_prefs };
 
 	private final static StructShader SHADERS[] = {
-			new StructShader(R.string.shader_1_name, R.string.shader_1_info,
-					R.layout.prefs_shader1, RendererShader1.class.getName()),
-			new StructShader(R.string.shader_2_name, R.string.shader_2_info,
-					R.layout.prefs_shader2, RendererShader2.class.getName()) };
+			new StructShader(R.string.shader_flat_name,
+					R.string.shader_flat_info, R.layout.prefs_shader1,
+					RendererFlat.class.getName()),
+			new StructShader(R.string.shader_bloom_name,
+					R.string.shader_bloom_info, R.layout.prefs_shader2,
+					RendererBloom.class.getName()) };
 
 	// private Button mButtonMenu;
 	private GLSurfaceView mGLSurfaceView;
@@ -184,6 +188,13 @@ public class MainActivity extends Activity {
 				onBackPressed();
 			}
 		});
+		button = (Button) findViewById(R.id.button_quit);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
 
 		/**
 		 * Generate shader menu.
@@ -208,12 +219,35 @@ public class MainActivity extends Activity {
 
 		mTimerFramesPerSecond = new Timer();
 		mTimerFramesPerSecond.schedule(new FramesPerSecondTask(), 0, 1000);
+
+		try {
+			SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+			int shaderValue = prefs.getInt(
+					getString(R.string.prefs_key_shader), 0);
+			setShader(SHADERS[shaderValue]);
+		} catch (Exception ex) {
+			Toast.makeText(this, "Unable instantiate shader.",
+					Toast.LENGTH_LONG).show();
+		}
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		mTimerFramesPerSecond.cancel();
+	}
+
+	private void setShader(StructShader shader) throws Exception {
+		RendererChild renderer = (RendererChild) Class.forName(
+				shader.mClassName).newInstance();
+		mTextViewInfo.setText(shader.mInfoId);
+
+		ViewGroup scroll = (ViewGroup) findViewById(R.id.menu_prefs_content);
+		scroll.removeAllViews();
+		View view = getLayoutInflater().inflate(shader.mPrefsId, scroll, false);
+		scroll.addView(view);
+
+		mMainRenderer.setShaderRenderer(renderer);
 	}
 
 	private class FramesPerSecondTask extends TimerTask {
@@ -224,7 +258,7 @@ public class MainActivity extends Activity {
 				return;
 			}
 
-			String text = getResources().getString(R.string.title,
+			String text = getString(R.string.title,
 					mMainRenderer.getFramesPerSecond());
 			mTextViewTitle.setText(text);
 		}
@@ -234,27 +268,23 @@ public class MainActivity extends Activity {
 
 		@Override
 		public void onClick(View v) {
-			int id = v.getId();
-			for (StructShader shader : SHADERS) {
-				if (shader.mTitleId == id) {
+			try {
+				for (int i = 0; i < SHADERS.length; ++i) {
+					if (v.getId() == SHADERS[i].mTitleId) {
+						setShader(SHADERS[i]);
 
-					try {
-						RendererChild renderer = (RendererChild) Class.forName(
-								shader.mClassName).newInstance();
-						mTextViewInfo.setText(shader.mInfoId);
+						SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+						prefs.edit()
+								.putInt(getString(R.string.prefs_key_shader), i)
+								.commit();
 
-						ViewGroup scroll = (ViewGroup) findViewById(R.id.menu_prefs_content);
-						scroll.removeAllViews();
-						View vvv = getLayoutInflater().inflate(shader.mPrefsId,
-								scroll, false);
-						scroll.addView(vvv);
-
-						mMainRenderer.setShaderRenderer(renderer);
-					} catch (Exception ex) {
+						return;
 					}
-
-					return;
 				}
+			} catch (Exception ex) {
+				Toast.makeText(MainActivity.this,
+						"Unable to instantiate shader.", Toast.LENGTH_LONG)
+						.show();
 			}
 		}
 	}

@@ -9,8 +9,9 @@
     <string name="button_menu">Menu</string>
     <string name="button_back">Back</string>
     <string name="button_shader">Select Shader</string>
-    <string name="button_preferences">Edit Preferences</string>
+    <string name="button_prefs">Edit Preferences</string>
     <string name="button_about">About Shaderize</string>
+    <string name="button_quit">Quit</string>
 
     <!-- About dialog -->
     <string name="about_title">About Shaderize</string>
@@ -28,9 +29,12 @@ harism@gmail.com</string>
     <string name="menu_prefs_shader_title">Shader Preferences</string>
 
     <!-- Shaders -->
-    <string name="shader_1_name">Shader 1</string>
-    <string name="shader_1_info">Shader 1 description.</string>
-    <string name="shader_2_name">Shader 2 Name</string>
-    <string name="shader_2_info">Shader 2 longer description.</string>
+    <string name="shader_flat_name">Flat Shader</string>
+    <string name="shader_flat_info">Basic flat shading rendering.</string>
+    <string name="shader_bloom_name">Bloom Shader</string>
+    <string name="shader_bloom_info">Bloom filter over flat rendered source.</string>
+
+    <!-- Prefererence keys -->
+    <string name="prefs_key_shader">prefs_key_shader</string>
 
 </resources>

@@ -28,7 +28,7 @@
         style="@style/button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_preferences" />
+        android:text="@string/button_prefs" />
 
     <Button
         android:id="@+id/button_about"
@@ -36,5 +36,12 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/button_about" />
+
+    <Button
+        android:id="@+id/button_quit"
+        style="@style/button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/button_quit" />
 
 </LinearLayout>

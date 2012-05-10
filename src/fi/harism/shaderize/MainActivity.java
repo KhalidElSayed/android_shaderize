@@ -6,6 +6,7 @@ import java.util.TimerTask;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Looper;
@@ -32,10 +33,10 @@ public class MainActivity extends Activity {
 
 	private final static StructShader SHADERS[] = {
 			new StructShader(R.string.shader_flat_name,
-					R.string.shader_flat_info, R.layout.prefs_shader1,
+					R.string.shader_flat_info, R.layout.prefs_flat,
 					RendererFlat.class.getName()),
 			new StructShader(R.string.shader_bloom_name,
-					R.string.shader_bloom_info, R.layout.prefs_shader2,
+					R.string.shader_bloom_info, R.layout.prefs_bloom,
 					RendererBloom.class.getName()) };
 
 	// private Button mButtonMenu;
@@ -90,6 +91,11 @@ public class MainActivity extends Activity {
 		} else {
 			super.onBackPressed();
 		}
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
 	}
 
 	@Override
@@ -259,10 +265,16 @@ public class MainActivity extends Activity {
 				shader.mClassName).newInstance();
 		mTextSwitcherInfo.setText(getText(shader.mInfoId));
 
-		ViewGroup scroll = (ViewGroup) findViewById(R.id.menu_prefs_content);
-		scroll.removeAllViews();
-		View view = getLayoutInflater().inflate(shader.mPrefsId, scroll, false);
-		scroll.addView(view);
+		ViewGroup content = (ViewGroup) findViewById(R.id.menu_prefs_content);
+		content.removeAllViews();
+		ViewGroup prefsView = (ViewGroup) getLayoutInflater().inflate(
+				shader.mPrefsId, content, false);
+		content.addView(prefsView);
+
+		renderer.setContext(this);
+
+		SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+		renderer.setPreferences(prefs, prefsView);
 
 		mMainRenderer.setRendererFilter(renderer);
 	}

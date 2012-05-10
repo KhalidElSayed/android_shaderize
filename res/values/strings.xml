@@ -34,8 +34,12 @@ harism@gmail.com</string>
     <string name="shader_bloom_name">Bloom Shader</string>
     <string name="shader_bloom_info">Bloom filter over flat rendered source.</string>
 
+    <!-- Preference strings -->
+    <string name="prefs_flat_saturate">Grayscale Saturation</string>
+
     <!-- Prefererence keys -->
     <string name="prefs_key_shader">prefs_key_shader</string>
+    <string name="prefs_key_flat_saturate">prefs_key_flat_saturate</string>
 
     <!-- Error strings -->
     <string name="error_shader_compiler">Error, shader compiler not supported.</string>

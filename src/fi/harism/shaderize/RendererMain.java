@@ -78,7 +78,7 @@ public class RendererMain implements GLSurfaceView.Renderer {
 		for (int idx = 0; idx < 2 && idx < mFilters.size();) {
 			try {
 				if (!mFilters.get(idx).mInitilized) {
-					mFilters.get(idx).onSurfaceCreated(mContext);
+					mFilters.get(idx).onSurfaceCreated();
 					mFilters.get(idx).onSurfaceChanged(mWidth, mHeight);
 					mFilters.get(idx).mInitilized = true;
 				}

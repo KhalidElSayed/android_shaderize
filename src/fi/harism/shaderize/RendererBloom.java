@@ -1,9 +1,13 @@
 package fi.harism.shaderize;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.opengl.GLES20;
+import android.view.ViewGroup;
 
 public class RendererBloom extends RendererFilter {
+
+	private Context mContext;
 
 	private Fbo mFboQuarter = new Fbo();
 	private final Shader mShaderBloom1 = new Shader();
@@ -12,6 +16,7 @@ public class RendererBloom extends RendererFilter {
 
 	@Override
 	public void onDestroy() {
+		mContext = null;
 	}
 
 	@Override
@@ -101,14 +106,23 @@ public class RendererBloom extends RendererFilter {
 	}
 
 	@Override
-	public void onSurfaceCreated(Context context) throws Exception {
-		String vs = Utils.loadRawResource(context, R.raw.bloom_vs);
-		String fs = Utils.loadRawResource(context, R.raw.bloom_pass1_fs);
+	public void onSurfaceCreated() throws Exception {
+		String vs = Utils.loadRawResource(mContext, R.raw.bloom_vs);
+		String fs = Utils.loadRawResource(mContext, R.raw.bloom_pass1_fs);
 		mShaderBloom1.setProgram(vs, fs);
-		fs = Utils.loadRawResource(context, R.raw.bloom_pass2_fs);
+		fs = Utils.loadRawResource(mContext, R.raw.bloom_pass2_fs);
 		mShaderBloom2.setProgram(vs, fs);
-		fs = Utils.loadRawResource(context, R.raw.bloom_pass3_fs);
+		fs = Utils.loadRawResource(mContext, R.raw.bloom_pass3_fs);
 		mShaderBloom3.setProgram(vs, fs);
+	}
+
+	@Override
+	public void setContext(Context context) {
+		mContext = context;
+	}
+
+	@Override
+	public void setPreferences(SharedPreferences prefs, ViewGroup prefsView) {
 	}
 
 }

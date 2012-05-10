@@ -3,7 +3,9 @@ package fi.harism.shaderize;
 import java.nio.ByteBuffer;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.opengl.GLES20;
+import android.view.ViewGroup;
 
 public abstract class RendererFilter {
 
@@ -28,12 +30,17 @@ public abstract class RendererFilter {
 	public abstract void onSurfaceChanged(int width, int height)
 			throws Exception;
 
-	public abstract void onSurfaceCreated(Context context) throws Exception;
+	public abstract void onSurfaceCreated() throws Exception;
 
-	public void renderFullQuad(int aPosition) {
+	protected final void renderFullQuad(int aPosition) {
 		GLES20.glVertexAttribPointer(aPosition, 2, GLES20.GL_BYTE, false, 0,
 				mFullQuadVertices);
 		GLES20.glEnableVertexAttribArray(aPosition);
 		GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 	}
+
+	public abstract void setContext(Context context);
+
+	public abstract void setPreferences(SharedPreferences prefs,
+			ViewGroup prefsView);
 }

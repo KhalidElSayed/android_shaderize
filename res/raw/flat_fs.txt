@@ -1,0 +1,12 @@
+
+precision mediump float;
+
+uniform sampler2D sTexture;
+uniform float uSaturate;
+varying vec2 vTextureCoord;
+
+void main() {
+	gl_FragColor = texture2D(sTexture, vTextureCoord);
+	float gray = dot(gl_FragColor.rgb, vec3(0.3, 0.59, 0.11));
+	gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(gray), uSaturate);
+}

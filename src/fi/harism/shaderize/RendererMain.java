@@ -235,10 +235,10 @@ public class RendererMain implements GLSurfaceView.Renderer {
 	}
 
 	public void setRendererFilter(RendererFilter filter) {
-		while (mFilters.size() > 2) {
+		mFilters.add(filter);
+		while (mFilters.size() > 3) {
 			mFilters.remove(mFilters.size() - 1);
 		}
-		mFilters.add(filter);
 		if (mFilters.size() <= 2) {
 			mTimeSwitchStart = SystemClock.uptimeMillis();
 		}

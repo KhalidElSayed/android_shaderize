@@ -15,7 +15,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +43,7 @@ public class MainActivity extends Activity {
 	private RendererMain mMainRenderer;
 
 	private MenuHandler mMenuHandler;
-	private TextView mTextViewInfo;
+	private TextSwitcher mTextSwitcherInfo;
 	private TextView mTextViewTitle;
 
 	private Timer mTimerFramesPerSecond;
@@ -98,7 +101,19 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.main);
 
 		mTextViewTitle = (TextView) findViewById(R.id.text_title);
-		mTextViewInfo = (TextView) findViewById(R.id.text_info);
+		mTextSwitcherInfo = (TextSwitcher) findViewById(R.id.text_info);
+
+		AnimationSet textIn = new AnimationSet(true);
+		textIn.addAnimation(new AlphaAnimation(0f, 1f));
+		textIn.addAnimation(new TranslateAnimation(-200, 0, 0, 0));
+		textIn.setDuration(1000);
+		mTextSwitcherInfo.setInAnimation(textIn);
+
+		AnimationSet textOut = new AnimationSet(true);
+		textOut.addAnimation(new AlphaAnimation(1f, 0f));
+		textOut.addAnimation(new TranslateAnimation(0, -200, 0, 0));
+		textOut.setDuration(1000);
+		mTextSwitcherInfo.setOutAnimation(textOut);
 
 		View menus[] = new View[MENU_IDS.length];
 		for (int i = 0; i < menus.length; ++i) {
@@ -242,7 +257,7 @@ public class MainActivity extends Activity {
 	private void setShader(StructShader shader) throws Exception {
 		RendererFilter renderer = (RendererFilter) Class.forName(
 				shader.mClassName).newInstance();
-		mTextViewInfo.setText(shader.mInfoId);
+		mTextSwitcherInfo.setText(getText(shader.mInfoId));
 
 		ViewGroup scroll = (ViewGroup) findViewById(R.id.menu_prefs_content);
 		scroll.removeAllViews();

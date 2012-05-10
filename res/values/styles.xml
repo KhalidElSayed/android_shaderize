@@ -17,7 +17,7 @@
 
     <style name="button" parent="@style/text">
         <item name="android:background">@drawable/bg_button</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:paddingTop">5dp</item>
         <item name="android:paddingBottom">5dp</item>
         <item name="android:paddingLeft">10dp</item>

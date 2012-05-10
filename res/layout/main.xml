@@ -19,7 +19,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:text="@string/title"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <TextSwitcher
             android:id="@+id/text_info"

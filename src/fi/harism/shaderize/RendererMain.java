@@ -142,6 +142,9 @@ public class RendererMain implements GLSurfaceView.Renderer {
 					vertexBuffer.capacity() / 3);
 		}
 
+		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+		GLES20.glDisable(GLES20.GL_CULL_FACE);
+
 		if (mFilters.size() > 0 && mFilters.get(0).mInitilized) {
 			mFilters.get(0).onDrawFrame(mFboMain, mObjScene);
 

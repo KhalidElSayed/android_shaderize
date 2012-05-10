@@ -3,6 +3,10 @@ precision mediump float;
 
 uniform sampler2D sTextureSource;
 uniform sampler2D sTextureBloom;
+uniform float uBloomSaturation;
+uniform float uBloomIntensity;
+uniform float uSourceSaturation;
+uniform float uSourceIntensity;
 varying vec2 vTextureCoord;
 
 vec4 adjustSaturation(vec4 color, float saturation) {
@@ -11,17 +15,11 @@ vec4 adjustSaturation(vec4 color, float saturation) {
 }
 
 void main() {
-
-	const float bloomSaturation = 1.0;
-	const float bloomIntensity = 1.0;
-	const float sourceSaturation = 0.0;
-	const float sourceIntensity = 0.0;
-
 	vec4 colorSource = texture2D(sTextureSource, vTextureCoord);
 	vec4 colorBloom = texture2D(sTextureBloom, vTextureCoord);
 
-	colorSource = adjustSaturation(colorSource, sourceSaturation) * sourceIntensity;
-	colorBloom = adjustSaturation(colorBloom, bloomSaturation) * bloomIntensity;
+	colorSource = adjustSaturation(colorSource, uSourceSaturation) * uSourceIntensity;
+	colorBloom = adjustSaturation(colorBloom, uBloomSaturation) * uBloomIntensity;
 
 	colorSource *= (1.0 - clamp(colorBloom, 0.0, 1.0));
 	gl_FragColor = colorSource  + colorBloom;

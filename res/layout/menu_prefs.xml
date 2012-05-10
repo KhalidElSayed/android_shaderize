@@ -31,13 +31,13 @@
                 style="@style/button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Button on talla kertaa 1" />
+                android:text="Button 1" />
 
             <Button
                 style="@style/button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Button on talla kertaa 2" />
+                android:text="Button 2" />
 
             <TextView
                 style="@style/text_red"

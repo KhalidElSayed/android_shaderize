@@ -35,11 +35,21 @@ harism@gmail.com</string>
     <string name="shader_bloom_info">Bloom filter over flat rendered source.</string>
 
     <!-- Preference strings -->
-    <string name="prefs_flat_saturate">Grayscale Saturation</string>
+    <string name="prefs_flat_saturate">Grayscale Saturation Value</string>
+    <string name="prefs_bloom_threshold">Bloom Threshold Value</string>
+    <string name="prefs_bloom_source_saturation">Source Saturation Value</string>
+    <string name="prefs_bloom_source_intensity">Source Intensity Value</string>
+    <string name="prefs_bloom_bloom_saturation">Bloom Saturation Value</string>
+    <string name="prefs_bloom_bloom_intensity">Bloom Intensity Value</string>
 
     <!-- Prefererence keys -->
     <string name="prefs_key_shader">prefs_key_shader</string>
     <string name="prefs_key_flat_saturate">prefs_key_flat_saturate</string>
+    <string name="prefs_key_bloom_threshold">prefs_key_bloom_threshold</string>
+    <string name="prefs_key_bloom_source_saturation">prefs_key_bloom_source_saturation</string>
+    <string name="prefs_key_bloom_source_intensity">prefs_key_bloom_source_intensity</string>
+    <string name="prefs_key_bloom_bloom_saturation">prefs_key_bloom_bloom_saturation</string>
+    <string name="prefs_key_bloom_bloom_intensity">prefs_key_bloom_bloom_intensity</string>
 
     <!-- Error strings -->
     <string name="error_shader_compiler">Error, shader compiler not supported.</string>

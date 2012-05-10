@@ -102,6 +102,7 @@ public class RendererMain implements GLSurfaceView.Renderer {
 		GLES20.glDisable(GLES20.GL_BLEND);
 		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
 		GLES20.glEnable(GLES20.GL_CULL_FACE);
 		GLES20.glFrontFace(GLES20.GL_CCW);
 
@@ -112,7 +113,7 @@ public class RendererMain implements GLSurfaceView.Renderer {
 		int aNormal = mShaderScene.getHandle("aNormal");
 		int aColor = mShaderScene.getHandle("aColor");
 
-		Vector<Obj> objs = mObjScene.getBoxes();
+		Vector<Obj> objs = mObjScene.getObjs();
 		for (Obj obj : objs) {
 			obj.updateMatrices(viewM, projM);
 

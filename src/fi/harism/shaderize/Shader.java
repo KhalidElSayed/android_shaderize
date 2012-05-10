@@ -10,10 +10,21 @@ import android.util.Log;
  */
 public final class Shader {
 
-	// Shader program handle.
+	// Shader program handles.
 	private int mProgram = -1;
+	private int mShaderFragment = -1;
 	// HashMap for storing uniform/attribute handles.
 	private final HashMap<String, Integer> mShaderHandleMap = new HashMap<String, Integer>();
+	private int mShaderVertex = -1;
+
+	/**
+	 * Deletes program and shaders associated with it.
+	 */
+	public void deleteProgram() {
+		GLES20.glDeleteShader(mShaderFragment);
+		GLES20.glDeleteShader(mShaderVertex);
+		GLES20.glDeleteProgram(mProgram);
+	}
 
 	/**
 	 * Get id for given handle name. This method checks for both attribute and
@@ -97,13 +108,12 @@ public final class Shader {
 	 */
 	public void setProgram(String vertexSource, String fragmentSource)
 			throws Exception {
-		int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, vertexSource);
-		int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER,
-				fragmentSource);
+		mShaderVertex = loadShader(GLES20.GL_VERTEX_SHADER, vertexSource);
+		mShaderFragment = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentSource);
 		int program = GLES20.glCreateProgram();
 		if (program != 0) {
-			GLES20.glAttachShader(program, vertexShader);
-			GLES20.glAttachShader(program, fragmentShader);
+			GLES20.glAttachShader(program, mShaderVertex);
+			GLES20.glAttachShader(program, mShaderFragment);
 			GLES20.glLinkProgram(program);
 			int[] linkStatus = new int[1];
 			GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0);

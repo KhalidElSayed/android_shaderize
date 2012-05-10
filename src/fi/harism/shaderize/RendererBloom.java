@@ -12,17 +12,24 @@ public class RendererBloom extends RendererFilter {
 	private Context mContext;
 
 	private Fbo mFboQuarter = new Fbo();
+
 	private SharedPreferences mPrefs;
+
 	private final Shader mShaderBloom1 = new Shader();
 	private final Shader mShaderBloom2 = new Shader();
-
 	private final Shader mShaderBloom3 = new Shader();
+
 	private float mSourceSaturation, mSourceIntensity;
 	private float mThreshold;
 
 	@Override
 	public void onDestroy() {
 		mContext = null;
+		mPrefs = null;
+		mFboQuarter.reset();
+		mShaderBloom1.deleteProgram();
+		mShaderBloom2.deleteProgram();
+		mShaderBloom3.deleteProgram();
 	}
 
 	@Override

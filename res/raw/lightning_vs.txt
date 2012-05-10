@@ -1,0 +1,21 @@
+uniform mat4 uModelViewM;
+uniform mat4 uModelViewProjM;
+uniform mat4 uNormalM;
+
+attribute vec3 aPosition;
+attribute vec3 aNormal;
+attribute vec3 aColor;
+
+varying vec3 vPosition;
+varying vec3 vNormal;
+varying vec4 vColor;
+
+void main() {
+	/* Projected position */
+	gl_Position = uModelViewProjM * vec4(aPosition, 1.0);
+	/* Normal */
+	vNormal = vec3(uNormalM * vec4(aNormal, 0.0));
+	/* Position in View space */
+	vPosition = vec3(uModelViewM * vec4(aPosition, 1.0));
+	vColor = vec4(aColor, 1.0);
+}

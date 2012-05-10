@@ -31,6 +31,8 @@ harism@gmail.com</string>
     <!-- Shaders -->
     <string name="shader_flat_name">Flat Shader</string>
     <string name="shader_flat_info">Basic flat shading rendering.</string>
+    <string name="shader_lightning_name">Lightning Shader</string>
+    <string name="shader_lightning_info">Per pixel diffuse on specular lightning.</string>
     <string name="shader_bloom_name">Bloom Shader</string>
     <string name="shader_bloom_info">Bloom filter over flat rendered source.</string>
 

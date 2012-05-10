@@ -9,14 +9,15 @@ import android.widget.SeekBar;
 public class RendererFlat extends RendererFilter {
 
 	private Context mContext;
-
 	private SharedPreferences mPrefs;
 	private float mSaturate;
-
 	private final Shader mShaderFlat = new Shader();
 
 	@Override
 	public void onDestroy() {
+		mContext = null;
+		mPrefs = null;
+		mShaderFlat.deleteProgram();
 	}
 
 	@Override

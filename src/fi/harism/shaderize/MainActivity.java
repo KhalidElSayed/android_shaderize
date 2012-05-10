@@ -35,11 +35,13 @@ public class MainActivity extends Activity {
 			new StructShader(R.string.shader_flat_name,
 					R.string.shader_flat_info, R.layout.prefs_flat,
 					RendererFlat.class.getName()),
+			new StructShader(R.string.shader_lightning_name,
+					R.string.shader_lightning_info, R.layout.prefs_flat,
+					RendererLightning.class.getName()),
 			new StructShader(R.string.shader_bloom_name,
 					R.string.shader_bloom_info, R.layout.prefs_bloom,
 					RendererBloom.class.getName()) };
 
-	// private Button mButtonMenu;
 	private GLSurfaceView mGLSurfaceView;
 	private RendererMain mMainRenderer;
 

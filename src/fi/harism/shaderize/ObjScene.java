@@ -25,7 +25,7 @@ public class ObjScene {
 
 	}
 
-	public Vector<Obj> getBoxes() {
+	public Vector<Obj> getObjs() {
 		return mBoxes;
 	}
 

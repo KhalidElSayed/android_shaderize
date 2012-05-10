@@ -5,10 +5,24 @@ uniform sampler2D sTextureSource;
 uniform sampler2D sTextureBloom;
 varying vec2 vTextureCoord;
 
+vec4 adjustSaturation(vec4 color, float saturation) {
+	float gray = dot(color.rgb, vec3(0.3, 0.59, 0.11));
+	return mix(vec4(gray), color, saturation);
+}
+
 void main() {
+
+	const float bloomSaturation = 1.0;
+	const float bloomIntensity = 1.0;
+	const float sourceSaturation = 0.0;
+	const float sourceIntensity = 0.0;
+
 	vec4 colorSource = texture2D(sTextureSource, vTextureCoord);
 	vec4 colorBloom = texture2D(sTextureBloom, vTextureCoord);
-	/* This is not correct way to apply bloom. */
+
+	colorSource = adjustSaturation(colorSource, sourceSaturation) * sourceIntensity;
+	colorBloom = adjustSaturation(colorBloom, bloomSaturation) * bloomIntensity;
+
+	colorSource *= (1.0 - clamp(colorBloom, 0.0, 1.0));
 	gl_FragColor = colorSource  + colorBloom;
-	gl_FragColor.a = 1.0;
 }

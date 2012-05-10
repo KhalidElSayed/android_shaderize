@@ -240,7 +240,7 @@ public class MainActivity extends Activity {
 	}
 
 	private void setShader(StructShader shader) throws Exception {
-		RendererChild renderer = (RendererChild) Class.forName(
+		RendererFilter renderer = (RendererFilter) Class.forName(
 				shader.mClassName).newInstance();
 		mTextViewInfo.setText(shader.mInfoId);
 
@@ -249,7 +249,7 @@ public class MainActivity extends Activity {
 		View view = getLayoutInflater().inflate(shader.mPrefsId, scroll, false);
 		scroll.addView(view);
 
-		mMainRenderer.setShaderRenderer(renderer);
+		mMainRenderer.setRendererFilter(renderer);
 	}
 
 	private class FramesPerSecondTask extends TimerTask {

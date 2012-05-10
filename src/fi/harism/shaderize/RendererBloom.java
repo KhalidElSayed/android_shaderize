@@ -1,82 +1,22 @@
 package fi.harism.shaderize;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-
 import android.content.Context;
 import android.opengl.GLES20;
 
-public class RendererBloom implements RendererChild {
+public class RendererBloom extends RendererFilter {
 
-	// private Fbo mFboFull = new Fbo();
 	private Fbo mFboQuarter = new Fbo();
-	private ByteBuffer mFullQuadVertices;
 	private final Shader mShaderBloom1 = new Shader();
 	private final Shader mShaderBloom2 = new Shader();
-
 	private final Shader mShaderBloom3 = new Shader();
-
-	private final Shader mShaderFlat = new Shader();
-
-	public RendererBloom() {
-		// Create full scene quad buffer.
-		final byte FULL_QUAD_COORDS[] = { -1, 1, -1, -1, 1, 1, 1, -1 };
-		mFullQuadVertices = ByteBuffer.allocateDirect(4 * 2);
-		mFullQuadVertices.put(FULL_QUAD_COORDS).position(0);
-	}
 
 	@Override
 	public void onDestroy() {
 	}
 
 	@Override
-	public void onDrawFrame(Fbo fboOut, ObjScene scene) {
-
-		/**
-		 * First render scene to full-screen buffer.
-		 */
-		fboOut.bind();
-		fboOut.bindTexture(1);
-		GLES20.glClearColor(0f, 0f, 0f, 1f);
-		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-
-		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
-		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-		GLES20.glEnable(GLES20.GL_CULL_FACE);
-		GLES20.glFrontFace(GLES20.GL_CCW);
-
-		mShaderFlat.useProgram();
-		int uModelViewProjM = mShaderFlat.getHandle("uModelViewProjM");
-		int uNormalM = mShaderFlat.getHandle("uNormalM");
-		int aPosition = mShaderFlat.getHandle("aPosition");
-		int aNormal = mShaderFlat.getHandle("aNormal");
-		int aColor = mShaderFlat.getHandle("aColor");
-
-		for (Obj obj : scene.getBoxes()) {
-			GLES20.glUniformMatrix4fv(uModelViewProjM, 1, false,
-					obj.getModelViewProjM(), 0);
-			GLES20.glUniformMatrix4fv(uNormalM, 1, false, obj.getNormalM(), 0);
-
-			FloatBuffer vertexBuffer = obj.getBufferVertices();
-			vertexBuffer.position(0);
-			GLES20.glVertexAttribPointer(aPosition, 3, GLES20.GL_FLOAT, false,
-					0, vertexBuffer);
-			GLES20.glEnableVertexAttribArray(aPosition);
-
-			FloatBuffer normalBuffer = obj.getBufferNormals();
-			normalBuffer.position(0);
-			GLES20.glVertexAttribPointer(aNormal, 3, GLES20.GL_FLOAT, false, 0,
-					normalBuffer);
-			GLES20.glEnableVertexAttribArray(aNormal);
-
-			FloatBuffer colorBuffer = obj.getBufferColors();
-			colorBuffer.position(0);
-			GLES20.glVertexAttribPointer(aColor, 3, GLES20.GL_FLOAT, false, 0,
-					colorBuffer);
-			GLES20.glEnableVertexAttribArray(aColor);
-
-			GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 36);
-		}
+	public void onDrawFrame(Fbo fbo, ObjScene scene) {
+		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 
 		/**
 		 * Instantiate variables for bloom filter.
@@ -106,13 +46,10 @@ public class RendererBloom implements RendererChild {
 		mFboQuarter.bind();
 		mFboQuarter.bindTexture(0);
 		mShaderBloom1.useProgram();
-		aPosition = mShaderBloom1.getHandle("aPosition");
+		int aPosition = mShaderBloom1.getHandle("aPosition");
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fboOut.getTexture(1));
-		GLES20.glVertexAttribPointer(aPosition, 2, GLES20.GL_BYTE, false, 0,
-				mFullQuadVertices);
-		GLES20.glEnableVertexAttribArray(aPosition);
-		GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fbo.getTexture(FBO_IN));
+		renderFullQuad(aPosition);
 
 		/**
 		 * Second pass, blur texture horizontally.
@@ -129,10 +66,7 @@ public class RendererBloom implements RendererChild {
 				numBlurPixelsPerSide);
 		GLES20.glUniform2f(mShaderBloom2.getHandle("uBlurOffset"), blurSizeH,
 				0f);
-		GLES20.glVertexAttribPointer(aPosition, 2, GLES20.GL_BYTE, false, 0,
-				mFullQuadVertices);
-		GLES20.glEnableVertexAttribArray(aPosition);
-		GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+		renderFullQuad(aPosition);
 
 		/**
 		 * Third pass, blur texture vertically.
@@ -142,42 +76,34 @@ public class RendererBloom implements RendererChild {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboQuarter.getTexture(1));
 		GLES20.glUniform2f(mShaderBloom2.getHandle("uBlurOffset"), 0f,
 				blurSizeV);
-		GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+		renderFullQuad(aPosition);
 
 		/**
 		 * Fourth pass, combine source texture and calculated bloom texture into
 		 * output texture.
 		 */
-		fboOut.bind();
-		fboOut.bindTexture(0);
+		fbo.bind();
+		fbo.bindTexture(FBO_OUT);
 		mShaderBloom3.useProgram();
 		aPosition = mShaderBloom3.getHandle("aPosition");
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboQuarter.getTexture(0));
 		GLES20.glUniform1i(mShaderBloom3.getHandle("sTextureBloom"), 0);
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fboOut.getTexture(1));
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fbo.getTexture(FBO_IN));
 		GLES20.glUniform1i(mShaderBloom3.getHandle("sTextureSource"), 1);
-		GLES20.glVertexAttribPointer(aPosition, 2, GLES20.GL_BYTE, false, 0,
-				mFullQuadVertices);
-		GLES20.glEnableVertexAttribArray(aPosition);
-		GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+		renderFullQuad(aPosition);
 	}
 
 	@Override
 	public void onSurfaceChanged(int width, int height) throws Exception {
-		// mFboFull.init(width, height, 1, true, false);
 		mFboQuarter.init(width / 4, height / 4, 2);
 	}
 
 	@Override
 	public void onSurfaceCreated(Context context) throws Exception {
-		String vs = Utils.loadRawResource(context, R.raw.flat_vs);
-		String fs = Utils.loadRawResource(context, R.raw.flat_fs);
-		mShaderFlat.setProgram(vs, fs);
-
-		vs = Utils.loadRawResource(context, R.raw.bloom_vs);
-		fs = Utils.loadRawResource(context, R.raw.bloom_pass1_fs);
+		String vs = Utils.loadRawResource(context, R.raw.bloom_vs);
+		String fs = Utils.loadRawResource(context, R.raw.bloom_pass1_fs);
 		mShaderBloom1.setProgram(vs, fs);
 		fs = Utils.loadRawResource(context, R.raw.bloom_pass2_fs);
 		mShaderBloom2.setProgram(vs, fs);

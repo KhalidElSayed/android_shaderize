@@ -1,5 +1,7 @@
 package fi.harism.shaderize;
 
+import java.util.Vector;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLES20;
@@ -11,13 +13,15 @@ public class RendererBloom extends RendererFilter {
 	private float mBloomSaturation, mBloomIntensity;
 	private Context mContext;
 
-	private Fbo mFboQuarter = new Fbo();
+	private final Fbo mFboFull = new Fbo();
+	private final Fbo mFboQuarter = new Fbo();
 
 	private SharedPreferences mPrefs;
 
-	private final Shader mShaderBloom1 = new Shader();
-	private final Shader mShaderBloom2 = new Shader();
-	private final Shader mShaderBloom3 = new Shader();
+	private final Shader mShaderBloomPass1 = new Shader();
+	private final Shader mShaderBloomPass2 = new Shader();
+	private final Shader mShaderBloomPass3 = new Shader();
+	private final Shader mShaderBloomScene = new Shader();
 
 	private float mSourceSaturation, mSourceIntensity;
 	private float mThreshold;
@@ -26,14 +30,48 @@ public class RendererBloom extends RendererFilter {
 	public void onDestroy() {
 		mContext = null;
 		mPrefs = null;
+		mFboFull.reset();
 		mFboQuarter.reset();
-		mShaderBloom1.deleteProgram();
-		mShaderBloom2.deleteProgram();
-		mShaderBloom3.deleteProgram();
+		mShaderBloomScene.deleteProgram();
+		mShaderBloomPass1.deleteProgram();
+		mShaderBloomPass2.deleteProgram();
+		mShaderBloomPass3.deleteProgram();
 	}
 
 	@Override
 	public void onDrawFrame(Fbo fbo, ObjScene scene) {
+		mFboFull.bind();
+		mFboFull.bindTexture(0);
+
+		GLES20.glClearColor(0f, 0f, 0f, 1f);
+		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+
+		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
+		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
+		GLES20.glFrontFace(GLES20.GL_CCW);
+
+		mShaderBloomScene.useProgram();
+
+		int uModelViewProjM = mShaderBloomScene.getHandle("uModelViewProjM");
+		int uNormalM = mShaderBloomScene.getHandle("uNormalM");
+
+		int aPosition = mShaderBloomScene.getHandle("aPosition");
+		int aNormal = mShaderBloomScene.getHandle("aNormal");
+		int aColor = mShaderBloomScene.getHandle("aColor");
+
+		Vector<Obj> objs = scene.getObjs();
+		for (Obj obj : objs) {
+			GLES20.glUniformMatrix4fv(uModelViewProjM, 1, false,
+					obj.getModelViewProjM(), 0);
+			GLES20.glUniformMatrix4fv(uNormalM, 1, false, obj.getNormalM(), 0);
+			renderScene(obj, aPosition, aNormal, aColor);
+		}
+
+		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+		GLES20.glDisable(GLES20.GL_CULL_FACE);
 
 		/**
 		 * Instantiate variables for bloom filter.
@@ -62,34 +100,35 @@ public class RendererBloom extends RendererFilter {
 		 */
 		mFboQuarter.bind();
 		mFboQuarter.bindTexture(0);
-		mShaderBloom1.useProgram();
+		mShaderBloomPass1.useProgram();
 
-		int uThreshold = mShaderBloom1.getHandle("uThreshold");
+		int uThreshold = mShaderBloomPass1.getHandle("uThreshold");
 		GLES20.glUniform1f(uThreshold, mThreshold);
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fbo.getTexture(FBO_IN));
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboFull.getTexture(0));
 
-		int aPosition = mShaderBloom1.getHandle("aPosition");
+		aPosition = mShaderBloomPass1.getHandle("aPosition");
 		renderFullQuad(aPosition);
 
 		/**
 		 * Second pass, blur texture horizontally.
 		 */
 		mFboQuarter.bindTexture(1);
-		mShaderBloom2.useProgram();
+		mShaderBloomPass2.useProgram();
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboQuarter.getTexture(0));
-		GLES20.glUniform3f(mShaderBloom2.getHandle("uIncrementalGaussian"),
+		GLES20.glUniform3f(mShaderBloomPass2.getHandle("uIncrementalGaussian"),
 				(float) incrementalGaussian1, (float) incrementalGaussian2,
 				(float) incrementalGaussian3);
-		GLES20.glUniform1f(mShaderBloom2.getHandle("uNumBlurPixelsPerSide"),
+		GLES20.glUniform1f(
+				mShaderBloomPass2.getHandle("uNumBlurPixelsPerSide"),
 				numBlurPixelsPerSide);
-		GLES20.glUniform2f(mShaderBloom2.getHandle("uBlurOffset"), blurSizeH,
-				0f);
+		GLES20.glUniform2f(mShaderBloomPass2.getHandle("uBlurOffset"),
+				blurSizeH, 0f);
 
-		aPosition = mShaderBloom2.getHandle("aPosition");
+		aPosition = mShaderBloomPass2.getHandle("aPosition");
 		renderFullQuad(aPosition);
 
 		/**
@@ -99,7 +138,7 @@ public class RendererBloom extends RendererFilter {
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboQuarter.getTexture(1));
-		GLES20.glUniform2f(mShaderBloom2.getHandle("uBlurOffset"), 0f,
+		GLES20.glUniform2f(mShaderBloomPass2.getHandle("uBlurOffset"), 0f,
 				blurSizeV);
 
 		renderFullQuad(aPosition);
@@ -109,13 +148,14 @@ public class RendererBloom extends RendererFilter {
 		 * output texture.
 		 */
 		fbo.bind();
-		fbo.bindTexture(FBO_OUT);
-		mShaderBloom3.useProgram();
+		fbo.bindTexture(0);
+		mShaderBloomPass3.useProgram();
 
-		int uBloomSaturation = mShaderBloom3.getHandle("uBloomSaturation");
-		int uBloomIntensity = mShaderBloom3.getHandle("uBloomIntensity");
-		int uSourceSaturation = mShaderBloom3.getHandle("uSourceSaturation");
-		int uSourceIntensity = mShaderBloom3.getHandle("uSourceIntensity");
+		int uBloomSaturation = mShaderBloomPass3.getHandle("uBloomSaturation");
+		int uBloomIntensity = mShaderBloomPass3.getHandle("uBloomIntensity");
+		int uSourceSaturation = mShaderBloomPass3
+				.getHandle("uSourceSaturation");
+		int uSourceIntensity = mShaderBloomPass3.getHandle("uSourceIntensity");
 		GLES20.glUniform1f(uBloomSaturation, mBloomSaturation);
 		GLES20.glUniform1f(uBloomIntensity, mBloomIntensity);
 		GLES20.glUniform1f(uSourceSaturation, mSourceSaturation);
@@ -123,29 +163,34 @@ public class RendererBloom extends RendererFilter {
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboQuarter.getTexture(0));
-		GLES20.glUniform1i(mShaderBloom3.getHandle("sTextureBloom"), 0);
+		GLES20.glUniform1i(mShaderBloomPass3.getHandle("sTextureBloom"), 0);
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fbo.getTexture(FBO_IN));
-		GLES20.glUniform1i(mShaderBloom3.getHandle("sTextureSource"), 1);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboFull.getTexture(0));
+		GLES20.glUniform1i(mShaderBloomPass3.getHandle("sTextureSource"), 1);
 
-		aPosition = mShaderBloom3.getHandle("aPosition");
+		aPosition = mShaderBloomPass3.getHandle("aPosition");
 		renderFullQuad(aPosition);
 	}
 
 	@Override
 	public void onSurfaceChanged(int width, int height) throws Exception {
+		mFboFull.init(width, height, 1, true, false);
 		mFboQuarter.init(width / 4, height / 4, 2);
 	}
 
 	@Override
 	public void onSurfaceCreated() throws Exception {
-		String vs = Utils.loadRawResource(mContext, R.raw.bloom_vs);
-		String fs = Utils.loadRawResource(mContext, R.raw.bloom_pass1_fs);
-		mShaderBloom1.setProgram(vs, fs);
-		fs = Utils.loadRawResource(mContext, R.raw.bloom_pass2_fs);
-		mShaderBloom2.setProgram(vs, fs);
-		fs = Utils.loadRawResource(mContext, R.raw.bloom_pass3_fs);
-		mShaderBloom3.setProgram(vs, fs);
+		String vertexSource, fragmentSource;
+		vertexSource = Utils.loadRawResource(mContext, R.raw.bloom_scene_vs);
+		fragmentSource = Utils.loadRawResource(mContext, R.raw.bloom_scene_fs);
+		mShaderBloomScene.setProgram(vertexSource, fragmentSource);
+		vertexSource = Utils.loadRawResource(mContext, R.raw.bloom_vs);
+		fragmentSource = Utils.loadRawResource(mContext, R.raw.bloom_pass1_fs);
+		mShaderBloomPass1.setProgram(vertexSource, fragmentSource);
+		fragmentSource = Utils.loadRawResource(mContext, R.raw.bloom_pass2_fs);
+		mShaderBloomPass2.setProgram(vertexSource, fragmentSource);
+		fragmentSource = Utils.loadRawResource(mContext, R.raw.bloom_pass3_fs);
+		mShaderBloomPass3.setProgram(vertexSource, fragmentSource);
 	}
 
 	@Override

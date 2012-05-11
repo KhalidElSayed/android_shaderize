@@ -1,8 +1,10 @@
+
 precision mediump float;
 
-// uniform vec3 uLightPosition;
+uniform float uAmbientFactor;
 uniform float uDiffuseFactor;
 uniform float uSpecularFactor;
+uniform float uShininess;
 
 varying vec3 vPosition;
 varying vec3 vNormal;
@@ -11,7 +13,7 @@ varying vec4 vColor;
 void main() {
 	float diffuse = 0.0;
 	float specular = 0.0;
-	vec3 lightDir = vec3(0.0, 0.0, -1.0) - vPosition; //uLightPosition - vPosition;
+	vec3 lightDir = vec3(0.0, 0.0, -1.0) - vPosition;
 	vec3 N = normalize(vNormal);
 	vec3 L = normalize(lightDir);			
 	float lambert = dot(N, L);
@@ -19,7 +21,7 @@ void main() {
 		diffuse = lambert * uDiffuseFactor;
 		vec3 R = reflect(-L, N);
 		vec3 E = normalize(-vPosition);
-		specular = pow(max(dot(R, E), 0.0), 8.0) * uSpecularFactor;
+		specular = pow(max(dot(R, E), 0.0), uShininess) * uSpecularFactor;
 	}
-	gl_FragColor = vColor * (diffuse + specular);
+	gl_FragColor = vColor * (uAmbientFactor + diffuse + specular);
 }

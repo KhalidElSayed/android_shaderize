@@ -40,8 +40,9 @@ public class MainActivity extends Activity {
 			new StructShader(R.string.shader_bloom_name,
 					R.string.shader_bloom_info, RendererBloom.class.getName()),
 			new StructShader(R.string.shader_fxaa_name,
-					R.string.shader_fxaa_info, RendererFxaa.class.getName())
-
+					R.string.shader_fxaa_info, RendererFxaa.class.getName()),
+			new StructShader(R.string.shader_dof_name,
+					R.string.shader_dof_info, RendererDof.class.getName())
 	};
 
 	private GLSurfaceView mGLSurfaceView;

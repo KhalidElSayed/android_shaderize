@@ -37,6 +37,8 @@ harism@gmail.com</string>
     <string name="shader_bloom_info">Bloom filter over flat rendered source.</string>
     <string name="shader_fxaa_name">FXAA Shader</string>
     <string name="shader_fxaa_info">FXAA anti-aliasing filter.</string>
+    <string name="shader_dof_name">Depth of Field Shader</string>
+    <string name="shader_dof_info">Depth of Field over flat rendered source.</string>
 
     <!-- Preference strings -->
     <string name="prefs_flat_saturation">Grayscale Saturation Value</string>

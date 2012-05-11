@@ -11,11 +11,11 @@ import android.util.Log;
 public final class Shader {
 
 	// Shader program handles.
-	private int mProgram = -1;
-	private int mShaderFragment = -1;
+	private int mProgram = 0;
+	private int mShaderFragment = 0;
 	// HashMap for storing uniform/attribute handles.
 	private final HashMap<String, Integer> mShaderHandleMap = new HashMap<String, Integer>();
-	private int mShaderVertex = -1;
+	private int mShaderVertex = 0;
 
 	/**
 	 * Deletes program and shaders associated with it.
@@ -24,6 +24,7 @@ public final class Shader {
 		GLES20.glDeleteShader(mShaderFragment);
 		GLES20.glDeleteShader(mShaderVertex);
 		GLES20.glDeleteProgram(mProgram);
+		mProgram = mShaderVertex = mShaderFragment = 0;
 	}
 
 	/**
@@ -119,7 +120,7 @@ public final class Shader {
 			GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0);
 			if (linkStatus[0] != GLES20.GL_TRUE) {
 				String error = GLES20.glGetProgramInfoLog(program);
-				GLES20.glDeleteProgram(program);
+				deleteProgram();
 				throw new Exception(error);
 			}
 		}

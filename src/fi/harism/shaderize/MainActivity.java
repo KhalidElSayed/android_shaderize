@@ -38,7 +38,11 @@ public class MainActivity extends Activity {
 					R.string.shader_lightning_info,
 					RendererLightning.class.getName()),
 			new StructShader(R.string.shader_bloom_name,
-					R.string.shader_bloom_info, RendererBloom.class.getName()) };
+					R.string.shader_bloom_info, RendererBloom.class.getName()),
+			new StructShader(R.string.shader_fxaa_name,
+					R.string.shader_fxaa_info, RendererFxaa.class.getName())
+
+	};
 
 	private GLSurfaceView mGLSurfaceView;
 	private MainRenderer mMainRenderer;

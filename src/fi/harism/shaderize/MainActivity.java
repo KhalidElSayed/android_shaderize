@@ -33,14 +33,12 @@ public class MainActivity extends Activity {
 
 	private final static StructShader SHADERS[] = {
 			new StructShader(R.string.shader_flat_name,
-					R.string.shader_flat_info, R.layout.prefs_flat,
-					RendererFlat.class.getName()),
+					R.string.shader_flat_info, RendererFlat.class.getName()),
 			new StructShader(R.string.shader_lightning_name,
-					R.string.shader_lightning_info, R.layout.prefs_lightning,
+					R.string.shader_lightning_info,
 					RendererLightning.class.getName()),
 			new StructShader(R.string.shader_bloom_name,
-					R.string.shader_bloom_info, R.layout.prefs_bloom,
-					RendererBloom.class.getName()) };
+					R.string.shader_bloom_info, RendererBloom.class.getName()) };
 
 	private GLSurfaceView mGLSurfaceView;
 	private RendererMain mMainRenderer;
@@ -269,14 +267,11 @@ public class MainActivity extends Activity {
 
 		ViewGroup content = (ViewGroup) findViewById(R.id.menu_prefs_content);
 		content.removeAllViews();
-		ViewGroup prefsView = (ViewGroup) getLayoutInflater().inflate(
-				shader.mPrefsId, content, false);
-		content.addView(prefsView);
 
 		renderer.setContext(this);
 
 		SharedPreferences prefs = getPreferences(MODE_PRIVATE);
-		renderer.setPreferences(prefs, prefsView);
+		renderer.setPreferences(prefs, content);
 
 		mMainRenderer.setRendererFilter(renderer);
 	}
@@ -323,14 +318,11 @@ public class MainActivity extends Activity {
 	private static class StructShader {
 		public String mClassName;
 		public int mInfoId;
-		public int mPrefsId;
 		public int mTitleId;
 
-		public StructShader(int titleId, int infoId, int prefsId,
-				String className) {
+		public StructShader(int titleId, int infoId, String className) {
 			mTitleId = titleId;
 			mInfoId = infoId;
-			mPrefsId = prefsId;
 			mClassName = className;
 		}
 	}

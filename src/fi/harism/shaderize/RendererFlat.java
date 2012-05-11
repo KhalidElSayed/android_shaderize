@@ -6,19 +6,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLES20;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
 
-public class RendererFlat extends RendererFilter {
+public class RendererFlat extends RendererFilter implements
+		PrefsSeekBar.Observer {
 
 	private Context mContext;
-	private SharedPreferences mPrefs;
 	private float mSaturation;
 	private final Shader mShaderFlat = new Shader();
 
 	@Override
 	public void onDestroy() {
 		mContext = null;
-		mPrefs = null;
 		mShaderFlat.deleteProgram();
 	}
 
@@ -49,11 +47,16 @@ public class RendererFlat extends RendererFilter {
 			GLES20.glUniformMatrix4fv(uModelViewProjM, 1, false,
 					obj.getModelViewProjM(), 0);
 			GLES20.glUniformMatrix4fv(uNormalM, 1, false, obj.getNormalM(), 0);
-			renderScene(obj, aPosition, aNormal, aColor);
+			Utils.renderObj(obj, aPosition, aNormal, aColor);
 		}
 
 		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		GLES20.glDisable(GLES20.GL_CULL_FACE);
+	}
+
+	@Override
+	public void onSeekBarChanged(int key, float value) {
+		mSaturation = value;
 	}
 
 	@Override
@@ -74,35 +77,11 @@ public class RendererFlat extends RendererFilter {
 	}
 
 	@Override
-	public void setPreferences(SharedPreferences prefs, ViewGroup prefsView) {
-		mPrefs = prefs;
-		mSaturation = mPrefs.getInt(
-				mContext.getString(R.string.prefs_key_flat_saturation), 0);
-
-		SeekBar seekBar = (SeekBar) prefsView
-				.findViewById(R.id.prefs_flat_saturation);
-		seekBar.setProgress((int) mSaturation);
-		seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress,
-					boolean fromUser) {
-				mSaturation = (float) progress / seekBar.getMax();
-				mPrefs.edit()
-						.putInt(mContext
-								.getString(R.string.prefs_key_flat_saturation),
-								progress).commit();
-			}
-
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-			}
-
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-			}
-		});
-
-		mSaturation /= seekBar.getMax();
+	public void setPreferences(SharedPreferences prefs, ViewGroup parent) {
+		PrefsSeekBar seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar.setText(R.string.prefs_flat_saturation);
+		seekBar.setPrefs(prefs, R.string.prefs_key_flat_saturation, this);
+		parent.addView(seekBar.getView());
 	}
 
 }

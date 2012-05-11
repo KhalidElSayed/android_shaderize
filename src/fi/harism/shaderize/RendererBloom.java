@@ -6,17 +6,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLES20;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
 
-public class RendererBloom extends RendererFilter {
+public class RendererBloom extends RendererFilter implements
+		PrefsSeekBar.Observer {
 
 	private float mBloomSaturation, mBloomIntensity;
 	private Context mContext;
 
 	private final Fbo mFboFull = new Fbo();
 	private final Fbo mFboQuarter = new Fbo();
-
-	private SharedPreferences mPrefs;
 
 	private final Shader mShaderBloomPass1 = new Shader();
 	private final Shader mShaderBloomPass2 = new Shader();
@@ -29,7 +27,6 @@ public class RendererBloom extends RendererFilter {
 	@Override
 	public void onDestroy() {
 		mContext = null;
-		mPrefs = null;
 		mFboFull.reset();
 		mFboQuarter.reset();
 		mShaderBloomScene.deleteProgram();
@@ -67,7 +64,7 @@ public class RendererBloom extends RendererFilter {
 			GLES20.glUniformMatrix4fv(uModelViewProjM, 1, false,
 					obj.getModelViewProjM(), 0);
 			GLES20.glUniformMatrix4fv(uNormalM, 1, false, obj.getNormalM(), 0);
-			renderScene(obj, aPosition, aNormal, aColor);
+			Utils.renderObj(obj, aPosition, aNormal, aColor);
 		}
 
 		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
@@ -109,7 +106,7 @@ public class RendererBloom extends RendererFilter {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboFull.getTexture(0));
 
 		aPosition = mShaderBloomPass1.getHandle("aPosition");
-		renderFullQuad(aPosition);
+		Utils.renderFullQuad(aPosition);
 
 		/**
 		 * Second pass, blur texture horizontally.
@@ -129,7 +126,7 @@ public class RendererBloom extends RendererFilter {
 				blurSizeH, 0f);
 
 		aPosition = mShaderBloomPass2.getHandle("aPosition");
-		renderFullQuad(aPosition);
+		Utils.renderFullQuad(aPosition);
 
 		/**
 		 * Third pass, blur texture vertically.
@@ -141,7 +138,7 @@ public class RendererBloom extends RendererFilter {
 		GLES20.glUniform2f(mShaderBloomPass2.getHandle("uBlurOffset"), 0f,
 				blurSizeV);
 
-		renderFullQuad(aPosition);
+		Utils.renderFullQuad(aPosition);
 
 		/**
 		 * Fourth pass, combine source texture and calculated bloom texture into
@@ -169,7 +166,28 @@ public class RendererBloom extends RendererFilter {
 		GLES20.glUniform1i(mShaderBloomPass3.getHandle("sTextureSource"), 1);
 
 		aPosition = mShaderBloomPass3.getHandle("aPosition");
-		renderFullQuad(aPosition);
+		Utils.renderFullQuad(aPosition);
+	}
+
+	@Override
+	public void onSeekBarChanged(int key, float value) {
+		switch (key) {
+		case R.string.prefs_key_bloom_threshold:
+			mThreshold = value;
+			break;
+		case R.string.prefs_key_bloom_source_saturation:
+			mSourceSaturation = value;
+			break;
+		case R.string.prefs_key_bloom_source_intensity:
+			mSourceIntensity = value;
+			break;
+		case R.string.prefs_key_bloom_bloom_saturation:
+			mBloomSaturation = value;
+			break;
+		case R.string.prefs_key_bloom_bloom_intensity:
+			mBloomIntensity = value;
+			break;
+		}
 	}
 
 	@Override
@@ -199,106 +217,36 @@ public class RendererBloom extends RendererFilter {
 	}
 
 	@Override
-	public void setPreferences(SharedPreferences prefs, ViewGroup prefsView) {
-		mPrefs = prefs;
-		mThreshold = mPrefs.getInt(
-				mContext.getString(R.string.prefs_key_bloom_threshold), 40);
-		mBloomSaturation = mPrefs.getInt(
-				mContext.getString(R.string.prefs_key_bloom_bloom_saturation),
-				100);
-		mBloomIntensity = mPrefs.getInt(
-				mContext.getString(R.string.prefs_key_bloom_bloom_intensity),
-				130);
-		mSourceSaturation = mPrefs.getInt(
-				mContext.getString(R.string.prefs_key_bloom_source_saturation),
-				100);
-		mSourceIntensity = mPrefs.getInt(
-				mContext.getString(R.string.prefs_key_bloom_source_intensity),
-				100);
+	public void setPreferences(SharedPreferences prefs, ViewGroup parent) {
+		PrefsSeekBar seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar.setDefaultValue(30);
+		seekBar.setText(R.string.prefs_bloom_threshold);
+		seekBar.setPrefs(prefs, R.string.prefs_key_bloom_threshold, this);
+		parent.addView(seekBar.getView());
 
-		SeekBar.OnSeekBarChangeListener seekBarListener = new SeekBar.OnSeekBarChangeListener() {
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress,
-					boolean fromUser) {
-				switch (seekBar.getId()) {
-				case R.id.prefs_bloom_threshold:
-					mThreshold = (float) progress / seekBar.getMax();
-					mPrefs.edit()
-							.putInt(mContext
-									.getString(R.string.prefs_key_bloom_threshold),
-									progress).commit();
-					break;
-				case R.id.prefs_bloom_bloom_saturation:
-					mBloomSaturation = (float) progress / seekBar.getMax();
-					mPrefs.edit()
-							.putInt(mContext
-									.getString(R.string.prefs_key_bloom_bloom_saturation),
-									progress).commit();
-					break;
-				case R.id.prefs_bloom_bloom_intensity:
-					mBloomIntensity = (float) progress
-							/ (seekBar.getMax() >> 1);
-					mPrefs.edit()
-							.putInt(mContext
-									.getString(R.string.prefs_key_bloom_bloom_intensity),
-									progress).commit();
-					break;
-				case R.id.prefs_bloom_source_saturation:
-					mSourceSaturation = (float) progress / seekBar.getMax();
-					mPrefs.edit()
-							.putInt(mContext
-									.getString(R.string.prefs_key_bloom_source_saturation),
-									progress).commit();
-					break;
-				case R.id.prefs_bloom_source_intensity:
-					mSourceIntensity = (float) progress
-							/ (seekBar.getMax() >> 1);
-					mPrefs.edit()
-							.putInt(mContext
-									.getString(R.string.prefs_key_bloom_source_intensity),
-									progress).commit();
-					break;
-				}
-			}
+		seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar.setDefaultValue(100);
+		seekBar.setText(R.string.prefs_bloom_source_saturation);
+		seekBar.setPrefs(prefs, R.string.prefs_key_bloom_source_saturation,
+				this);
+		parent.addView(seekBar.getView());
 
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-			}
+		seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar.setDefaultValue(100);
+		seekBar.setText(R.string.prefs_bloom_source_intensity);
+		seekBar.setPrefs(prefs, R.string.prefs_key_bloom_source_intensity, this);
+		parent.addView(seekBar.getView());
 
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-			}
-		};
+		seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar.setDefaultValue(100);
+		seekBar.setText(R.string.prefs_bloom_bloom_saturation);
+		seekBar.setPrefs(prefs, R.string.prefs_key_bloom_bloom_saturation, this);
+		parent.addView(seekBar.getView());
 
-		SeekBar seekBar = (SeekBar) prefsView
-				.findViewById(R.id.prefs_bloom_threshold);
-		seekBar.setProgress((int) mThreshold);
-		seekBar.setOnSeekBarChangeListener(seekBarListener);
-		mThreshold /= seekBar.getMax();
-
-		seekBar = (SeekBar) prefsView
-				.findViewById(R.id.prefs_bloom_bloom_saturation);
-		seekBar.setProgress((int) mBloomSaturation);
-		seekBar.setOnSeekBarChangeListener(seekBarListener);
-		mBloomSaturation /= seekBar.getMax();
-
-		seekBar = (SeekBar) prefsView
-				.findViewById(R.id.prefs_bloom_bloom_intensity);
-		seekBar.setProgress((int) mBloomIntensity);
-		seekBar.setOnSeekBarChangeListener(seekBarListener);
-		mBloomIntensity /= seekBar.getMax() >> 1;
-
-		seekBar = (SeekBar) prefsView
-				.findViewById(R.id.prefs_bloom_source_saturation);
-		seekBar.setProgress((int) mSourceSaturation);
-		seekBar.setOnSeekBarChangeListener(seekBarListener);
-		mSourceSaturation /= seekBar.getMax();
-
-		seekBar = (SeekBar) prefsView
-				.findViewById(R.id.prefs_bloom_source_intensity);
-		seekBar.setProgress((int) mSourceIntensity);
-		seekBar.setOnSeekBarChangeListener(seekBarListener);
-		mSourceIntensity /= seekBar.getMax() >> 1;
+		seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar.setDefaultValue(130);
+		seekBar.setText(R.string.prefs_bloom_bloom_intensity);
+		seekBar.setPrefs(prefs, R.string.prefs_key_bloom_bloom_intensity, this);
+		parent.addView(seekBar.getView());
 	}
-
 }

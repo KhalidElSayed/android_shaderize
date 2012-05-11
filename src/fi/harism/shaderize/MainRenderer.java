@@ -13,14 +13,14 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.widget.Toast;
 
-public class RendererMain implements GLSurfaceView.Renderer {
+public class MainRenderer implements GLSurfaceView.Renderer {
 
 	private static final int TRANSITION_TIME = 1000;
 
 	private Context mContext;
 	private final Fbo mFboMain = new Fbo();
 	// private RendererFilter mFilterCurrent = null;
-	private final Vector<RendererFilter> mFilters = new Vector<RendererFilter>();
+	private final Vector<Renderer> mFilters = new Vector<Renderer>();
 
 	private float mFrameRate;
 	private ByteBuffer mFullQuadVertices;
@@ -35,7 +35,7 @@ public class RendererMain implements GLSurfaceView.Renderer {
 	private long mTimeSwitchStart;
 	private int mWidth, mHeight;
 
-	public RendererMain() {
+	public MainRenderer() {
 		// Create full scene quad buffer.
 		final byte FULL_QUAD_COORDS[] = { -1, 1, -1, -1, 1, 1, 1, -1 };
 		mFullQuadVertices = ByteBuffer.allocateDirect(4 * 2);
@@ -187,7 +187,7 @@ public class RendererMain implements GLSurfaceView.Renderer {
 		mContext = context;
 	}
 
-	public void setRendererFilter(RendererFilter filter) {
+	public void setRendererFilter(Renderer filter) {
 		mFilters.add(filter);
 		while (mFilters.size() > 3) {
 			mFilters.remove(mFilters.size() - 1);

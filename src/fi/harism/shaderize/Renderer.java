@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.ViewGroup;
 
-public abstract class RendererFilter {
+public abstract class Renderer {
 
 	public boolean mInitilized = false;
 

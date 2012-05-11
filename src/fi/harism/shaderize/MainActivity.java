@@ -41,9 +41,9 @@ public class MainActivity extends Activity {
 					R.string.shader_bloom_info, RendererBloom.class.getName()) };
 
 	private GLSurfaceView mGLSurfaceView;
-	private RendererMain mMainRenderer;
+	private MainRenderer mMainRenderer;
 
-	private MenuHandler mMenuHandler;
+	private MainMenus mMenuHandler;
 	private TextSwitcher mTextSwitcherInfo;
 	private TextView mTextViewTitle;
 
@@ -125,7 +125,7 @@ public class MainActivity extends Activity {
 		for (int i = 0; i < menus.length; ++i) {
 			menus[i] = findViewById(MENU_IDS[i]);
 		}
-		mMenuHandler = new MenuHandler(menus);
+		mMenuHandler = new MainMenus(menus);
 
 		/**
 		 * Setup Menu -button.
@@ -231,7 +231,7 @@ public class MainActivity extends Activity {
 			viewGroup.addView(tv);
 		}
 
-		mMainRenderer = new RendererMain();
+		mMainRenderer = new MainRenderer();
 		mMainRenderer.setContext(this);
 
 		mGLSurfaceView = (GLSurfaceView) findViewById(R.id.glsurfaceview);
@@ -261,8 +261,8 @@ public class MainActivity extends Activity {
 	}
 
 	private void setShader(StructShader shader) throws Exception {
-		RendererFilter renderer = (RendererFilter) Class.forName(
-				shader.mClassName).newInstance();
+		Renderer renderer = (Renderer) Class.forName(shader.mClassName)
+				.newInstance();
 		mTextSwitcherInfo.setText(getText(shader.mInfoId));
 
 		ViewGroup content = (ViewGroup) findViewById(R.id.menu_prefs_content);

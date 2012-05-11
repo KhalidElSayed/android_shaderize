@@ -7,8 +7,7 @@ import android.content.SharedPreferences;
 import android.opengl.GLES20;
 import android.view.ViewGroup;
 
-public class RendererFlat extends RendererFilter implements
-		PrefsSeekBar.Observer {
+public class RendererFlat extends Renderer implements PrefsSeekBar.Observer {
 
 	private Context mContext;
 	private float mSaturation;

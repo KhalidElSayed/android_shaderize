@@ -7,8 +7,7 @@ import android.content.SharedPreferences;
 import android.opengl.GLES20;
 import android.view.ViewGroup;
 
-public class RendererBloom extends RendererFilter implements
-		PrefsSeekBar.Observer {
+public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 
 	private float mBloomSaturation, mBloomIntensity;
 	private Context mContext;

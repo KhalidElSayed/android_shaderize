@@ -1,0 +1,17 @@
+
+uniform mat4 uModelViewProjM;
+uniform mat4 uNormalM;
+
+attribute vec3 aPosition;
+attribute vec3 aNormal;
+attribute vec3 aColor;
+
+varying vec4 vColor;
+varying float vZValue;
+
+void main() {
+	gl_Position = uModelViewProjM * vec4(aPosition, 1.0);
+	vZValue = gl_Position.z;
+	vec4 normal = uNormalM * vec4(aNormal, 1.0);
+	vColor = vec4(aColor * normal.z, 1.0);
+}

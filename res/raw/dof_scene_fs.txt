@@ -1,0 +1,16 @@
+
+precision mediump float;
+
+uniform float uAperture;
+uniform float uFocalLength;
+uniform float uPlaneInFocus;
+
+varying vec4 vColor;
+varying float vZValue;
+
+void main() {
+	gl_FragColor = vColor;
+	gl_FragColor.a = abs(uAperture *
+	                     (uFocalLength * (vZValue - uPlaneInFocus)) /
+	                     (vZValue * (uPlaneInFocus - uFocalLength)) );
+}

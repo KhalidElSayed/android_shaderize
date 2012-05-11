@@ -81,9 +81,10 @@ vec4 FxaaPixelShader(vec2 pos,
 void main() {
 	/* uFrameSize.xy = width, height
 	   uFrameSize.zw = 1/width, 1/height */
+
 	vec4 fxaaConsolePosPos;
-	fxaaConsolePosPos.xy = floor(vTextureCoord * uFrameSize.xy);
-	fxaaConsolePosPos.zw = fxaaConsolePosPos.xy + 1.0;
+	fxaaConsolePosPos.xy = vTextureCoord * uFrameSize.xy - 1.0;
+	fxaaConsolePosPos.zw = fxaaConsolePosPos.xy + 2.0;
 	fxaaConsolePosPos *= uFrameSize.zwzw;
 	
 	const float fxaaConsoleEdgeSharpness = 8.0;

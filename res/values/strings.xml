@@ -10,11 +10,11 @@
     <string name="button_back">Back</string>
     <string name="button_shader">Select Shader</string>
     <string name="button_prefs">Edit Preferences</string>
-    <string name="button_about">About Shaderize</string>
+    <string name="button_about">About Shaderize²</string>
     <string name="button_quit">Quit</string>
 
     <!-- About dialog -->
-    <string name="about_title">About Shaderize</string>
+    <string name="about_title">About Shaderize²</string>
     <string name="about_content">Full source code for this application is available on GitHub\n
 www.github.com/harism/android_shaderize\n
 \n

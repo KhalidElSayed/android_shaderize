@@ -7,10 +7,9 @@ import android.content.SharedPreferences;
 import android.opengl.GLES20;
 import android.view.ViewGroup;
 
-public class RendererFlat extends Renderer implements PrefsSeekBar.Observer {
+public class RendererFlat extends Renderer {
 
 	private Context mContext;
-	private float mSaturation;
 	private final Shader mShaderFlat = new Shader();
 
 	@Override
@@ -34,12 +33,9 @@ public class RendererFlat extends Renderer implements PrefsSeekBar.Observer {
 		mShaderFlat.useProgram();
 		int uModelViewProjM = mShaderFlat.getHandle("uModelViewProjM");
 		int uNormalM = mShaderFlat.getHandle("uNormalM");
-		int uSaturation = mShaderFlat.getHandle("uSaturation");
 		int aPosition = mShaderFlat.getHandle("aPosition");
 		int aNormal = mShaderFlat.getHandle("aNormal");
 		int aColor = mShaderFlat.getHandle("aColor");
-
-		GLES20.glUniform1f(uSaturation, mSaturation);
 
 		Vector<Obj> objs = scene.getObjs();
 		for (Obj obj : objs) {
@@ -51,11 +47,6 @@ public class RendererFlat extends Renderer implements PrefsSeekBar.Observer {
 
 		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		GLES20.glDisable(GLES20.GL_CULL_FACE);
-	}
-
-	@Override
-	public void onSeekBarChanged(int key, float value) {
-		mSaturation = value;
 	}
 
 	@Override
@@ -77,10 +68,6 @@ public class RendererFlat extends Renderer implements PrefsSeekBar.Observer {
 
 	@Override
 	public void setPreferences(SharedPreferences prefs, ViewGroup parent) {
-		PrefsSeekBar seekBar = new PrefsSeekBar(mContext, parent);
-		seekBar.setText(R.string.prefs_flat_saturation);
-		seekBar.setPrefs(prefs, R.string.prefs_key_flat_saturation, this);
-		parent.addView(seekBar.getView());
 	}
 
 }

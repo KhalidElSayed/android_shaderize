@@ -5,6 +5,7 @@ import java.util.Vector;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLES20;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
@@ -225,29 +226,36 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 
 	@Override
 	public void setPreferences(SharedPreferences prefs, ViewGroup parent) {
-		PrefsSeekBar seekBar = new PrefsSeekBar(mContext, parent);
+		LayoutInflater inflater = LayoutInflater.from(mContext);
+
+		PrefsSeekBar seekBar;
+		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,
+				parent, false);
 		seekBar.setDefaultValue(30);
 		seekBar.setText(R.string.prefs_dof_radius);
 		seekBar.setPrefs(prefs, R.string.prefs_key_dof_radius, this);
-		parent.addView(seekBar.getView());
+		parent.addView(seekBar);
 
-		seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,
+				parent, false);
 		seekBar.setDefaultValue(50);
 		seekBar.setText(R.string.prefs_dof_steps);
 		seekBar.setPrefs(prefs, R.string.prefs_key_dof_steps, this);
-		parent.addView(seekBar.getView());
+		parent.addView(seekBar);
 
-		seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,
+				parent, false);
 		seekBar.setDefaultValue(35);
 		seekBar.setText(R.string.prefs_dof_fstop);
 		seekBar.setPrefs(prefs, R.string.prefs_key_dof_fstop, this);
-		parent.addView(seekBar.getView());
+		parent.addView(seekBar);
 
-		seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,
+				parent, false);
 		seekBar.setDefaultValue(40);
 		seekBar.setText(R.string.prefs_dof_fplane);
 		seekBar.setPrefs(prefs, R.string.prefs_key_dof_fplane, this);
-		parent.addView(seekBar.getView());
+		parent.addView(seekBar);
 	}
 
 }

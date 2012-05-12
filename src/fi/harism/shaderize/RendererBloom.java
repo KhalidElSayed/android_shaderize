@@ -5,22 +5,23 @@ import java.util.Vector;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLES20;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 
-	private float mBloomSaturation, mBloomIntensity;
 	private Context mContext;
-
 	private final Fbo mFboFull = new Fbo();
+
 	private final Fbo mFboQuarter = new Fbo();
+	private float mRadius;
 
 	private final Shader mShaderBloomPass1 = new Shader();
 	private final Shader mShaderBloomPass2 = new Shader();
 	private final Shader mShaderBloomPass3 = new Shader();
 	private final Shader mShaderBloomScene = new Shader();
 
-	private float mSourceSaturation, mSourceIntensity;
+	private float mSourceIntensity, mBloomIntensity;
 	private float mThreshold;
 
 	@Override
@@ -78,7 +79,7 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 		float blurSizeV = 1f / mFboQuarter.getHeight();
 
 		// Calculate number of pixels from relative size.
-		int numBlurPixelsPerSide = (int) (0.05f * Math.min(
+		int numBlurPixelsPerSide = (int) (mRadius * Math.min(
 				mFboQuarter.getWidth(), mFboQuarter.getHeight()));
 		if (numBlurPixelsPerSide < 1)
 			numBlurPixelsPerSide = 1;
@@ -147,14 +148,9 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 		fbo.bindTexture(0);
 		mShaderBloomPass3.useProgram();
 
-		int uBloomSaturation = mShaderBloomPass3.getHandle("uBloomSaturation");
 		int uBloomIntensity = mShaderBloomPass3.getHandle("uBloomIntensity");
-		int uSourceSaturation = mShaderBloomPass3
-				.getHandle("uSourceSaturation");
 		int uSourceIntensity = mShaderBloomPass3.getHandle("uSourceIntensity");
-		GLES20.glUniform1f(uBloomSaturation, mBloomSaturation);
 		GLES20.glUniform1f(uBloomIntensity, mBloomIntensity);
-		GLES20.glUniform1f(uSourceSaturation, mSourceSaturation);
 		GLES20.glUniform1f(uSourceIntensity, mSourceIntensity);
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -171,17 +167,14 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 	@Override
 	public void onSeekBarChanged(int key, float value) {
 		switch (key) {
+		case R.string.prefs_key_bloom_radius:
+			mRadius = 0.01f + 0.09f * value;
+			break;
 		case R.string.prefs_key_bloom_threshold:
 			mThreshold = value;
 			break;
-		case R.string.prefs_key_bloom_source_saturation:
-			mSourceSaturation = value;
-			break;
 		case R.string.prefs_key_bloom_source_intensity:
 			mSourceIntensity = value;
-			break;
-		case R.string.prefs_key_bloom_bloom_saturation:
-			mBloomSaturation = value;
 			break;
 		case R.string.prefs_key_bloom_bloom_intensity:
 			mBloomIntensity = value;
@@ -217,35 +210,35 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 
 	@Override
 	public void setPreferences(SharedPreferences prefs, ViewGroup parent) {
-		PrefsSeekBar seekBar = new PrefsSeekBar(mContext, parent);
+		LayoutInflater inflater = LayoutInflater.from(mContext);
+
+		PrefsSeekBar seekBar;
+		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,
+				parent, false);
+		seekBar.setDefaultValue(30);
+		seekBar.setText(R.string.prefs_bloom_radius);
+		seekBar.setPrefs(prefs, R.string.prefs_key_bloom_radius, this);
+		parent.addView(seekBar);
+
+		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,
+				parent, false);
 		seekBar.setDefaultValue(30);
 		seekBar.setText(R.string.prefs_bloom_threshold);
 		seekBar.setPrefs(prefs, R.string.prefs_key_bloom_threshold, this);
-		parent.addView(seekBar.getView());
+		parent.addView(seekBar);
 
-		seekBar = new PrefsSeekBar(mContext, parent);
-		seekBar.setDefaultValue(100);
-		seekBar.setText(R.string.prefs_bloom_source_saturation);
-		seekBar.setPrefs(prefs, R.string.prefs_key_bloom_source_saturation,
-				this);
-		parent.addView(seekBar.getView());
-
-		seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,
+				parent, false);
 		seekBar.setDefaultValue(100);
 		seekBar.setText(R.string.prefs_bloom_source_intensity);
 		seekBar.setPrefs(prefs, R.string.prefs_key_bloom_source_intensity, this);
-		parent.addView(seekBar.getView());
+		parent.addView(seekBar);
 
-		seekBar = new PrefsSeekBar(mContext, parent);
-		seekBar.setDefaultValue(100);
-		seekBar.setText(R.string.prefs_bloom_bloom_saturation);
-		seekBar.setPrefs(prefs, R.string.prefs_key_bloom_bloom_saturation, this);
-		parent.addView(seekBar.getView());
-
-		seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,
+				parent, false);
 		seekBar.setDefaultValue(130);
 		seekBar.setText(R.string.prefs_bloom_bloom_intensity);
 		seekBar.setPrefs(prefs, R.string.prefs_key_bloom_bloom_intensity, this);
-		parent.addView(seekBar.getView());
+		parent.addView(seekBar);
 	}
 }

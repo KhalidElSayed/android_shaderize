@@ -5,6 +5,7 @@ import java.util.Vector;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLES20;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 public class RendererLightning extends Renderer implements
@@ -105,32 +106,39 @@ public class RendererLightning extends Renderer implements
 
 	@Override
 	public void setPreferences(SharedPreferences prefs, ViewGroup parent) {
-		PrefsSeekBar seekBar = new PrefsSeekBar(mContext, parent);
+		LayoutInflater inflater = LayoutInflater.from(mContext);
+
+		PrefsSeekBar seekBar;
+		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,
+				parent, false);
 		seekBar.setDefaultValue(30);
 		seekBar.setText(R.string.prefs_lightning_ambient_factor);
 		seekBar.setPrefs(prefs, R.string.prefs_key_lightning_ambient_factor,
 				this);
-		parent.addView(seekBar.getView());
+		parent.addView(seekBar);
 
-		seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,
+				parent, false);
 		seekBar.setDefaultValue(30);
 		seekBar.setText(R.string.prefs_lightning_diffuse_factor);
 		seekBar.setPrefs(prefs, R.string.prefs_key_lightning_diffuse_factor,
 				this);
-		parent.addView(seekBar.getView());
+		parent.addView(seekBar);
 
-		seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,
+				parent, false);
 		seekBar.setDefaultValue(30);
 		seekBar.setText(R.string.prefs_lightning_specular_factor);
 		seekBar.setPrefs(prefs, R.string.prefs_key_lightning_specular_factor,
 				this);
-		parent.addView(seekBar.getView());
+		parent.addView(seekBar);
 
-		seekBar = new PrefsSeekBar(mContext, parent);
+		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,
+				parent, false);
 		seekBar.setDefaultValue(50);
 		seekBar.setText(R.string.prefs_lightning_shininess);
 		seekBar.setPrefs(prefs, R.string.prefs_key_lightning_shininess, this);
-		parent.addView(seekBar.getView());
+		parent.addView(seekBar);
 	}
 
 }

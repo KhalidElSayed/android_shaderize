@@ -42,10 +42,9 @@ harism@gmail.com</string>
 
     <!-- Preference strings -->
     <string name="prefs_flat_saturation">Grayscale Saturation Value</string>
+    <string name="prefs_bloom_radius">Bloom Radius Value</string>
     <string name="prefs_bloom_threshold">Bloom Threshold Value</string>
-    <string name="prefs_bloom_source_saturation">Source Saturation Value</string>
     <string name="prefs_bloom_source_intensity">Source Intensity Value</string>
-    <string name="prefs_bloom_bloom_saturation">Bloom Saturation Value</string>
     <string name="prefs_bloom_bloom_intensity">Bloom Intensity Value</string>
     <string name="prefs_lightning_ambient_factor">Ambient Factor Value</string>
     <string name="prefs_lightning_diffuse_factor">Diffuse Factor Value</string>
@@ -59,10 +58,9 @@ harism@gmail.com</string>
     <!-- Prefererence keys -->
     <string name="prefs_key_shader">prefs_key_shader</string>
     <string name="prefs_key_flat_saturation">prefs_key_flat_saturation</string>
+    <string name="prefs_key_bloom_radius">prefs_key_bloom_radius</string>
     <string name="prefs_key_bloom_threshold">prefs_key_bloom_threshold</string>
-    <string name="prefs_key_bloom_source_saturation">prefs_key_bloom_source_saturation</string>
     <string name="prefs_key_bloom_source_intensity">prefs_key_bloom_source_intensity</string>
-    <string name="prefs_key_bloom_bloom_saturation">prefs_key_bloom_bloom_saturation</string>
     <string name="prefs_key_bloom_bloom_intensity">prefs_key_bloom_bloom_intensity</string>
     <string name="prefs_key_lightning_ambient_factor">prefs_key_lightning_ambient_factor</string>
     <string name="prefs_key_lightning_diffuse_factor">prefs_key_lightning_diffuse_factor</string>

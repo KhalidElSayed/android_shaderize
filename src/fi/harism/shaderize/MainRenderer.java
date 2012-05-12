@@ -22,7 +22,6 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	private final Vector<Renderer> mFilters = new Vector<Renderer>();
 
 	private float mFrameRate;
-	private final ObjCamera mObjCamera = new ObjCamera();
 
 	private final ObjScene mObjScene = new ObjScene();
 	private final boolean mShaderCompilerSupported[] = new boolean[1];
@@ -74,20 +73,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 			}
 		}
 
-		mObjCamera.animate();
-		float viewM[] = mObjCamera.getViewM();
-		float projM[] = mObjCamera.getProjM();
-
-		mFboMain.bind();
-		mFboMain.bindTexture(0);
-
-		Vector<Obj> objs = mObjScene.getObjs();
-		for (Obj obj : objs) {
-			obj.updateMatrices(viewM, projM);
-		}
-
-		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-		GLES20.glDisable(GLES20.GL_CULL_FACE);
+		mObjScene.animate();
 
 		if (mFilters.size() > 0 && mFilters.get(0).mInitilized) {
 			mFilters.get(0).onDrawFrame(mFboMain, mObjScene);
@@ -141,7 +127,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		mWidth = width;
 		mHeight = height;
 		mFboMain.init(mWidth, mHeight, 1, true, false);
-		mObjCamera.setViewSize(mWidth, mHeight);
+		mObjScene.setViewSize(mWidth, mHeight);
 	}
 
 	@Override

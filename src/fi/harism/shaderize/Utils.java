@@ -59,33 +59,32 @@ public class Utils {
 		int uProjM = shader.getHandle("uProjM");
 		int uNormalM = shader.getHandle("uNormalM");
 
+		int uColor = shader.getHandle("uColor");
+		int uSaturation = shader.getHandle("uSaturation");
+
 		int aPosition = shader.getHandle("aPosition");
 		int aNormal = shader.getHandle("aNormal");
-		int aColor = shader.getHandle("aColor");
 
-		for (Obj obj : scene.getObjs()) {
+		for (ObjBox box : scene.getBoxes()) {
 			GLES20.glUniformMatrix4fv(uModelViewM, 1, false,
-					obj.getModelViewM(), 0);
-			GLES20.glUniformMatrix4fv(uProjM, 1, false, obj.getProjM(), 0);
-			GLES20.glUniformMatrix4fv(uNormalM, 1, false, obj.getNormalM(), 0);
+					box.getModelViewM(), 0);
+			GLES20.glUniformMatrix4fv(uProjM, 1, false, box.getProjM(), 0);
+			GLES20.glUniformMatrix4fv(uNormalM, 1, false, box.getNormalM(), 0);
 
-			FloatBuffer vertexBuffer = obj.getBufferVertices();
+			GLES20.glUniform3fv(uColor, 1, box.getColor(), 0);
+			GLES20.glUniform1f(uSaturation, box.getSaturation());
+
+			FloatBuffer vertexBuffer = box.getBufferVertices();
 			vertexBuffer.position(0);
 			GLES20.glVertexAttribPointer(aPosition, 3, GLES20.GL_FLOAT, false,
 					0, vertexBuffer);
 			GLES20.glEnableVertexAttribArray(aPosition);
 
-			FloatBuffer normalBuffer = obj.getBufferNormals();
+			FloatBuffer normalBuffer = box.getBufferNormals();
 			normalBuffer.position(0);
 			GLES20.glVertexAttribPointer(aNormal, 3, GLES20.GL_FLOAT, false, 0,
 					normalBuffer);
 			GLES20.glEnableVertexAttribArray(aNormal);
-
-			FloatBuffer colorBuffer = obj.getBufferColors();
-			colorBuffer.position(0);
-			GLES20.glVertexAttribPointer(aColor, 3, GLES20.GL_FLOAT, false, 0,
-					colorBuffer);
-			GLES20.glEnableVertexAttribArray(aColor);
 
 			GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0,
 					vertexBuffer.capacity() / 3);

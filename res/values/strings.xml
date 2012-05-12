@@ -2,8 +2,8 @@
 <resources>
 
     <!-- Common strings -->
-    <string name="app_name">Shaderize</string>
-    <string name="title">Shaderize (%.1ffps)</string>
+    <string name="app_name">Shaderize²</string>
+    <string name="title">Shaderize² (%.1ffps)</string>
 
     <!-- Button texts -->
     <string name="button_menu">Menu</string>

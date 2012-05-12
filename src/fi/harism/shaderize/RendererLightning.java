@@ -65,8 +65,10 @@ public class RendererLightning extends Renderer implements
 	@Override
 	public void onSurfaceCreated() throws Exception {
 		String vertexSource, fragmentSource;
-		vertexSource = Utils.loadRawResource(mContext, R.raw.lightning_vs);
-		fragmentSource = Utils.loadRawResource(mContext, R.raw.lightning_fs);
+		vertexSource = Utils
+				.loadRawResource(mContext, R.raw.lightning_scene_vs);
+		fragmentSource = Utils.loadRawResource(mContext,
+				R.raw.lightning_scene_fs);
 		mShaderLightning.setProgram(vertexSource, fragmentSource);
 	}
 

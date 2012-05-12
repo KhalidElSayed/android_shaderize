@@ -11,7 +11,7 @@ public final class ObjBox {
 	private static final int FLOATS_PER_VERTEX = 3;
 	private static final int VERTICES_PER_FACE = 6;
 
-	private final float mColor[] = new float[3];
+	private final float mColor[] = { .5f, .5f, .5f };
 	// Local model matrix.
 	private final float[] mModelM = new float[16];
 
@@ -52,7 +52,6 @@ public final class ObjBox {
 		setNormal(5, -1f, 0f, 0f);
 
 		setSize(1f, 1f, 1f);
-		setColor(.5f, .5f, .5f);
 
 		// Simply set all matrices to identity.
 		android.opengl.Matrix.setIdentityM(mModelM, 0);
@@ -61,15 +60,15 @@ public final class ObjBox {
 		android.opengl.Matrix.setIdentityM(mTranslateM, 0);
 	}
 
-	public FloatBuffer getBufferNormals() {
+	public final FloatBuffer getBufferNormals() {
 		return mNormalBuffer;
 	}
 
-	public FloatBuffer getBufferVertices() {
+	public final FloatBuffer getBufferVertices() {
 		return mVertexBuffer;
 	}
 
-	public float[] getColor() {
+	public final float[] getColor() {
 		return mColor;
 	}
 
@@ -110,13 +109,13 @@ public final class ObjBox {
 		return mSaturation;
 	}
 
-	public void setColor(float r, float g, float b) {
-		mColor[0] = r;
-		mColor[1] = g;
-		mColor[2] = b;
+	public final void setColor(float[] color) {
+		mColor[0] = color[0];
+		mColor[1] = color[1];
+		mColor[2] = color[2];
 	}
 
-	private void setNormal(int face, float x, float y, float z) {
+	private final void setNormal(int face, float x, float y, float z) {
 		int i = face * VERTICES_PER_FACE * FLOATS_PER_VERTEX;
 		for (int j = 0; j < VERTICES_PER_FACE; ++j) {
 			mNormalBuffer.put(i + (j * FLOATS_PER_VERTEX) + 0, x);
@@ -174,8 +173,8 @@ public final class ObjBox {
 		mRecalculateModelM = true;
 	}
 
-	private void setSideCoordinates(int face, int is, int it, int iu, float s1,
-			float t1, float s2, float t2, float u) {
+	private final void setSideCoordinates(int face, int is, int it, int iu,
+			float s1, float t1, float s2, float t2, float u) {
 		int i = face * VERTICES_PER_FACE * FLOATS_PER_VERTEX;
 
 		mVertexBuffer.put(i + is, s1);
@@ -208,7 +207,7 @@ public final class ObjBox {
 		mVertexBuffer.put(i + iu, u);
 	}
 
-	public void setSize(float width, float height, float depth) {
+	public final void setSize(float width, float height, float depth) {
 		float w = width / 2f;
 		float h = height / 2f;
 		float d = depth / 2f;
@@ -231,7 +230,7 @@ public final class ObjBox {
 	 * @param projM
 	 *            Projection matrix
 	 */
-	public void updateMatrices(float[] viewM, float[] projM) {
+	public final void updateMatrices(float[] viewM, float[] projM) {
 		if (mRecalculateModelM) {
 			android.opengl.Matrix.multiplyMM(mModelM, 0, mScaleM, 0, mRotateM,
 					0);

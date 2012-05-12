@@ -21,6 +21,8 @@ void main() {
 	/* Position in projected space */
 	gl_Position = uProjM * vPosition;
 	
-	float gray = dot(uColor.rgb, vec3(0.299, 0.587, 0.114));
+	vColor = vec4(uColor, 1.0);
+	
+	float gray = dot(vColor.rgb, vec3(0.299, 0.587, 0.114));
 	vColor.rgb = mix(vec3(gray), vColor.rgb, uSaturation);
 }

@@ -14,10 +14,10 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 	private final Fbo mFboQuarter = new Fbo();
 	private float mRadius;
 
-	private final Shader mShaderBloomPass1 = new Shader();
-	private final Shader mShaderBloomPass2 = new Shader();
-	private final Shader mShaderBloomPass3 = new Shader();
-	private final Shader mShaderBloomScene = new Shader();
+	private final Shader mShaderPass1 = new Shader();
+	private final Shader mShaderPass2 = new Shader();
+	private final Shader mShaderPass3 = new Shader();
+	private final Shader mShaderScene = new Shader();
 
 	private float mSourceIntensity, mBloomIntensity;
 	private float mThreshold;
@@ -27,17 +27,17 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 		mContext = null;
 		mFboFull.reset();
 		mFboQuarter.reset();
-		mShaderBloomScene.deleteProgram();
-		mShaderBloomPass1.deleteProgram();
-		mShaderBloomPass2.deleteProgram();
-		mShaderBloomPass3.deleteProgram();
+		mShaderScene.deleteProgram();
+		mShaderPass1.deleteProgram();
+		mShaderPass2.deleteProgram();
+		mShaderPass3.deleteProgram();
 	}
 
 	@Override
 	public void onDrawFrame(Fbo fbo, ObjScene scene) {
 		mFboFull.bind();
 		mFboFull.bindTexture(0);
-		Utils.renderScene(scene, mShaderBloomScene);
+		Utils.renderScene(scene, mShaderScene);
 
 		/**
 		 * Instantiate variables for bloom filter.
@@ -66,34 +66,32 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 		 */
 		mFboQuarter.bind();
 		mFboQuarter.bindTexture(0);
-		mShaderBloomPass1.useProgram();
+		mShaderPass1.useProgram();
 
-		int uThreshold = mShaderBloomPass1.getHandle("uThreshold");
+		int uThreshold = mShaderPass1.getHandle("uThreshold");
 		GLES20.glUniform1f(uThreshold, mThreshold);
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboFull.getTexture(0));
 
-		Utils.renderQuad(mShaderBloomPass1.getHandle("aPosition"));
+		Utils.renderQuad(mShaderPass1.getHandle("aPosition"));
 
 		/**
 		 * Second pass, blur texture horizontally.
 		 */
 		mFboQuarter.bindTexture(1);
-		mShaderBloomPass2.useProgram();
+		mShaderPass2.useProgram();
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboQuarter.getTexture(0));
-		GLES20.glUniform3f(mShaderBloomPass2.getHandle("uIncrementalGaussian"),
+		GLES20.glUniform3f(mShaderPass2.getHandle("uIncrementalGaussian"),
 				(float) incrementalGaussian1, (float) incrementalGaussian2,
 				(float) incrementalGaussian3);
-		GLES20.glUniform1f(
-				mShaderBloomPass2.getHandle("uNumBlurPixelsPerSide"),
+		GLES20.glUniform1f(mShaderPass2.getHandle("uNumBlurPixelsPerSide"),
 				numBlurPixelsPerSide);
-		GLES20.glUniform2f(mShaderBloomPass2.getHandle("uBlurOffset"),
-				blurSizeH, 0f);
+		GLES20.glUniform2f(mShaderPass2.getHandle("uBlurOffset"), blurSizeH, 0f);
 
-		Utils.renderQuad(mShaderBloomPass2.getHandle("aPosition"));
+		Utils.renderQuad(mShaderPass2.getHandle("aPosition"));
 
 		/**
 		 * Third pass, blur texture vertically.
@@ -102,10 +100,9 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboQuarter.getTexture(1));
-		GLES20.glUniform2f(mShaderBloomPass2.getHandle("uBlurOffset"), 0f,
-				blurSizeV);
+		GLES20.glUniform2f(mShaderPass2.getHandle("uBlurOffset"), 0f, blurSizeV);
 
-		Utils.renderQuad(mShaderBloomPass2.getHandle("aPosition"));
+		Utils.renderQuad(mShaderPass2.getHandle("aPosition"));
 
 		/**
 		 * Fourth pass, combine source texture and calculated bloom texture into
@@ -113,21 +110,21 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 		 */
 		fbo.bind();
 		fbo.bindTexture(0);
-		mShaderBloomPass3.useProgram();
+		mShaderPass3.useProgram();
 
-		int uBloomIntensity = mShaderBloomPass3.getHandle("uBloomIntensity");
-		int uSourceIntensity = mShaderBloomPass3.getHandle("uSourceIntensity");
+		int uBloomIntensity = mShaderPass3.getHandle("uBloomIntensity");
+		int uSourceIntensity = mShaderPass3.getHandle("uSourceIntensity");
 		GLES20.glUniform1f(uBloomIntensity, mBloomIntensity);
 		GLES20.glUniform1f(uSourceIntensity, mSourceIntensity);
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboQuarter.getTexture(0));
-		GLES20.glUniform1i(mShaderBloomPass3.getHandle("sTextureBloom"), 0);
+		GLES20.glUniform1i(mShaderPass3.getHandle("sTextureBloom"), 0);
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboFull.getTexture(0));
-		GLES20.glUniform1i(mShaderBloomPass3.getHandle("sTextureSource"), 1);
+		GLES20.glUniform1i(mShaderPass3.getHandle("sTextureSource"), 1);
 
-		Utils.renderQuad(mShaderBloomPass3.getHandle("aPosition"));
+		Utils.renderQuad(mShaderPass3.getHandle("aPosition"));
 	}
 
 	@Override
@@ -157,16 +154,16 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 	@Override
 	public void onSurfaceCreated() throws Exception {
 		String vertexSource, fragmentSource;
-		vertexSource = Utils.loadRawResource(mContext, R.raw.bloom_scene_vs);
-		fragmentSource = Utils.loadRawResource(mContext, R.raw.bloom_scene_fs);
-		mShaderBloomScene.setProgram(vertexSource, fragmentSource);
-		vertexSource = Utils.loadRawResource(mContext, R.raw.bloom_vs);
+		vertexSource = Utils.loadRawResource(mContext, R.raw.flat_scene_vs);
+		fragmentSource = Utils.loadRawResource(mContext, R.raw.flat_scene_fs);
+		mShaderScene.setProgram(vertexSource, fragmentSource);
+		vertexSource = Utils.loadRawResource(mContext, R.raw.bloom_quad_vs);
 		fragmentSource = Utils.loadRawResource(mContext, R.raw.bloom_pass1_fs);
-		mShaderBloomPass1.setProgram(vertexSource, fragmentSource);
+		mShaderPass1.setProgram(vertexSource, fragmentSource);
 		fragmentSource = Utils.loadRawResource(mContext, R.raw.bloom_pass2_fs);
-		mShaderBloomPass2.setProgram(vertexSource, fragmentSource);
+		mShaderPass2.setProgram(vertexSource, fragmentSource);
 		fragmentSource = Utils.loadRawResource(mContext, R.raw.bloom_pass3_fs);
-		mShaderBloomPass3.setProgram(vertexSource, fragmentSource);
+		mShaderPass3.setProgram(vertexSource, fragmentSource);
 	}
 
 	@Override

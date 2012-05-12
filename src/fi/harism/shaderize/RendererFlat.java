@@ -29,8 +29,8 @@ public class RendererFlat extends Renderer {
 	@Override
 	public void onSurfaceCreated() throws Exception {
 		String vertexSource, fragmentSource;
-		vertexSource = Utils.loadRawResource(mContext, R.raw.flat_vs);
-		fragmentSource = Utils.loadRawResource(mContext, R.raw.flat_fs);
+		vertexSource = Utils.loadRawResource(mContext, R.raw.flat_scene_vs);
+		fragmentSource = Utils.loadRawResource(mContext, R.raw.flat_scene_fs);
 		mShaderFlat.setProgram(vertexSource, fragmentSource);
 	}
 

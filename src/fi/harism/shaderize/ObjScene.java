@@ -19,16 +19,14 @@ public class ObjScene {
 
 	public ObjScene() {
 		ObjBox box = new ObjBox();
-		box.setColor(Utils.rand(.5f, 1f), Utils.rand(.5f, 1f),
-				Utils.rand(.5f, 1f));
+		setRandColor(box);
 		box.setSize(-10f, -10f, -10f);
 		mBoxes.add(box);
 
 		for (int i = 0; i < 100; ++i) {
 			box = new ObjBox();
 			box.setSize(.4f, .4f, .4f);
-			box.setColor(Utils.rand(.5f, 1f), Utils.rand(.5f, 1f),
-					Utils.rand(.5f, 1f));
+			setRandColor(box);
 			box.setPosition(Utils.rand(-4f, 4f), Utils.rand(-4f, 4f),
 					Utils.rand(-4f, 4f));
 			mBoxes.add(box);
@@ -64,6 +62,19 @@ public class ObjScene {
 	}
 
 	private void setRandColor(ObjBox box) {
+		float[] color = box.getColor();
+		color[0] = .9f;
+		color[1] = Utils.rand(0, 1f) < .5f ? .7f : .9f;
+		color[2] = Utils.rand(0, 1f) < .5f ? 0f : .4f;
+
+		for (int i = 0; i < 5; ++i) {
+			int idx1 = (int) Utils.rand(0f, 3f);
+			int idx2 = (int) Utils.rand(0f, 3f);
+
+			float col1 = color[idx1];
+			color[idx1] = color[idx2];
+			color[idx2] = col1;
+		}
 	}
 
 	public void setViewSize(int width, int height) {

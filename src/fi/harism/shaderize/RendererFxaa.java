@@ -61,8 +61,8 @@ public class RendererFxaa extends Renderer implements PrefsSeekBar.Observer {
 	@Override
 	public void onSurfaceCreated() throws Exception {
 		String vertexSource, fragmentSource;
-		vertexSource = Utils.loadRawResource(mContext, R.raw.fxaa_scene_vs);
-		fragmentSource = Utils.loadRawResource(mContext, R.raw.fxaa_scene_fs);
+		vertexSource = Utils.loadRawResource(mContext, R.raw.flat_scene_vs);
+		fragmentSource = Utils.loadRawResource(mContext, R.raw.flat_scene_fs);
 		mShaderScene.setProgram(vertexSource, fragmentSource);
 		vertexSource = Utils.loadRawResource(mContext, R.raw.fxaa_pass1_vs);
 		fragmentSource = Utils.loadRawResource(mContext, R.raw.fxaa_pass1_fs);

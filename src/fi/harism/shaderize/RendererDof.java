@@ -26,7 +26,6 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 	private final Shader mShaderPass2 = new Shader();
 	private final Shader mShaderPass3 = new Shader();
 	private final Shader mShaderScene = new Shader();
-	private float mSteps;
 
 	@Override
 	public void onDestroy() {
@@ -100,8 +99,12 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 				mFboHalf.getHeight())
 				/ mFboHalf.getHeight();
 
-		float stepRadius = mRadius / mSteps;
-
+		// Calculate number of steps from relative size.
+		float blurSteps = mRadius
+				* Math.min(mFboHalf.getWidth(), mFboHalf.getHeight());
+		blurSteps = Math.max(1f, blurSteps / 2f);
+		float stepRadius = mRadius / blurSteps;
+		// Calculate blur vectors.
 		float[][] dir = new float[3][2];
 		for (int i = 0; i < 3; i++) {
 			double a = i * Math.PI * 2 / 3;
@@ -126,7 +129,7 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboHalf.getTexture(0));
 		GLES20.glUniform1i(mShaderPass1.getHandle("sTexture1"), 0);
-		GLES20.glUniform1f(mShaderPass1.getHandle("uSteps"), mSteps);
+		GLES20.glUniform1f(mShaderPass1.getHandle("uSteps"), blurSteps);
 		GLES20.glUniform2fv(mShaderPass1.getHandle("uDelta0"), 1, dir[0], 0);
 		Utils.renderFullQuad(mShaderPass1.getHandle("aPosition"));
 
@@ -138,7 +141,7 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 		// TEX_IDX_1 is already bind after previous step.
 		GLES20.glUniform1i(mShaderPass2.getHandle("sTexture1"), 0);
 		GLES20.glUniform1i(mShaderPass2.getHandle("sTexture2"), 1);
-		GLES20.glUniform1f(mShaderPass2.getHandle("uSteps"), mSteps);
+		GLES20.glUniform1f(mShaderPass2.getHandle("uSteps"), blurSteps);
 		GLES20.glUniform2fv(mShaderPass2.getHandle("uDelta0"), 1, dir[0], 0);
 		GLES20.glUniform2fv(mShaderPass2.getHandle("uDelta1"), 1, dir[1], 0);
 		Utils.renderFullQuad(mShaderPass2.getHandle("aPosition"));
@@ -151,7 +154,7 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 		// TEX_IDX_2 is already bind.
 		GLES20.glUniform1i(mShaderPass3.getHandle("sTexture1"), 1);
 		GLES20.glUniform1i(mShaderPass3.getHandle("sTexture2"), 0);
-		GLES20.glUniform1f(mShaderPass3.getHandle("uSteps"), mSteps);
+		GLES20.glUniform1f(mShaderPass3.getHandle("uSteps"), blurSteps);
 		GLES20.glUniform2fv(mShaderPass3.getHandle("uDelta1"), 1, dir[1], 0);
 		GLES20.glUniform2fv(mShaderPass3.getHandle("uDelta2"), 1, dir[2], 0);
 		Utils.renderFullQuad(mShaderPass3.getHandle("aPosition"));
@@ -169,9 +172,6 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 	@Override
 	public void onSeekBarChanged(int key, float value) {
 		switch (key) {
-		case R.string.prefs_key_dof_steps:
-			mSteps = 1f + value * 9f;
-			break;
 		case R.string.prefs_key_dof_radius:
 			mRadius = 0.01f + value * 0.09f;
 			break;
@@ -234,13 +234,6 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 		seekBar.setDefaultValue(30);
 		seekBar.setText(R.string.prefs_dof_radius);
 		seekBar.setPrefs(prefs, R.string.prefs_key_dof_radius, this);
-		parent.addView(seekBar);
-
-		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,
-				parent, false);
-		seekBar.setDefaultValue(50);
-		seekBar.setText(R.string.prefs_dof_steps);
-		seekBar.setPrefs(prefs, R.string.prefs_key_dof_steps, this);
 		parent.addView(seekBar);
 
 		seekBar = (PrefsSeekBar) inflater.inflate(R.layout.prefs_seekbar,

@@ -51,7 +51,6 @@ harism@gmail.com</string>
     <string name="prefs_lightning_specular_factor">Specular Factor Value</string>
     <string name="prefs_lightning_shininess">Shininess Value</string>
     <string name="prefs_dof_radius">Lens Blur Radius</string>
-    <string name="prefs_dof_steps">Lens Blur Steps</string>
     <string name="prefs_dof_fstop">Lens Blur F/Stop</string>
     <string name="prefs_dof_fplane">Lens Blur Focal Plane</string>
 
@@ -67,7 +66,6 @@ harism@gmail.com</string>
     <string name="prefs_key_lightning_specular_factor">prefs_key_lightning_specular_factor</string>
     <string name="prefs_key_lightning_shininess">prefs_key_lightning_shininess</string>
     <string name="prefs_key_dof_radius">prefs_key_dof_radius</string>
-    <string name="prefs_key_dof_steps">prefs_key_dof_steps</string>
     <string name="prefs_key_dof_fstop">prefs_key_dof_fstop</string>
     <string name="prefs_key_dof_fplane">prefs_key_dof_fplane</string>
 

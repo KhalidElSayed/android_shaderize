@@ -11,30 +11,25 @@ public final class ObjBox {
 	private static final int FLOATS_PER_VERTEX = 3;
 	private static final int VERTICES_PER_FACE = 6;
 
-	private final float mColor[] = { .5f, .5f, .5f };
 	// Local model matrix.
 	private final float[] mModelM = new float[16];
-
 	// World model-view matrix.
 	private final float[] mModelViewM = new float[16];
-
 	private FloatBuffer mNormalBuffer;
+
 	// World normal matrix.
 	private final float[] mNormalM = new float[16];
-
 	// Projection matrix.
 	private final float[] mProjM = new float[16];
-
 	private boolean mRecalculateModelM;
 	// Local rotation matrix.
 	private final float[] mRotateM = new float[16];
-	private float mSaturation;
-
 	// Local scaling matrix.
 	private final float[] mScaleM = new float[16];
 	// Local translation matrix.
 	private final float[] mTranslateM = new float[16];
 	private FloatBuffer mVertexBuffer;
+	private final float[] mViewM = new float[16];
 
 	public ObjBox() {
 		int sz = FACE_COUNT * VERTICES_PER_FACE * FLOATS_PER_VERTEX
@@ -60,16 +55,32 @@ public final class ObjBox {
 		android.opengl.Matrix.setIdentityM(mTranslateM, 0);
 	}
 
+	/**
+	 * Updates matrices based on earlier given View matrix. This method should
+	 * be called before any rendering takes place, and in most cases after scene
+	 * has been animated.
+	 */
+	public final void calculate() {
+		if (mRecalculateModelM) {
+			android.opengl.Matrix.multiplyMM(mModelM, 0, mScaleM, 0, mRotateM,
+					0);
+			android.opengl.Matrix.multiplyMM(mModelM, 0, mTranslateM, 0,
+					mModelM, 0);
+			mRecalculateModelM = false;
+		}
+
+		// Add local model matrix to global model-view matrix.
+		android.opengl.Matrix.multiplyMM(mModelViewM, 0, mViewM, 0, mModelM, 0);
+		// Fast inverse-transpose matrix calculation.
+		Matrix.invTransposeM(mNormalM, 0, mModelViewM, 0);
+	}
+
 	public final FloatBuffer getBufferNormals() {
 		return mNormalBuffer;
 	}
 
 	public final FloatBuffer getBufferVertices() {
 		return mVertexBuffer;
-	}
-
-	public final float[] getColor() {
-		return mColor;
 	}
 
 	/**
@@ -105,14 +116,12 @@ public final class ObjBox {
 		return mProjM;
 	}
 
-	public float getSaturation() {
-		return mSaturation;
-	}
-
-	public final void setColor(float[] color) {
-		mColor[0] = color[0];
-		mColor[1] = color[1];
-		mColor[2] = color[2];
+	public final void setMatrices(float[] viewM, float[] projM) {
+		// Copy view and projection -matrices as-is.
+		for (int i = 0; i < 16; ++i) {
+			mViewM[i] = viewM[i];
+			mProjM[i] = projM[i];
+		}
 	}
 
 	private final void setNormal(int face, float x, float y, float z) {
@@ -146,19 +155,15 @@ public final class ObjBox {
 	 * object.
 	 * 
 	 * @param x
-	 *            Rotation around x axis
+	 *            Rotation around rx axis
 	 * @param y
-	 *            Rotation around y axis
+	 *            Rotation around ry axis
 	 * @param z
-	 *            Rotation around z axis
+	 *            Rotation around rz axis
 	 */
-	public final void setRotation(float x, float y, float z) {
-		Matrix.setRotateM(mRotateM, 0, x, y, z);
+	public final void setRotation(float rx, float ry, float rz) {
+		Matrix.setRotateM(mRotateM, 0, rx, ry, rz);
 		mRecalculateModelM = true;
-	}
-
-	public void setSaturation(float saturation) {
-		mSaturation = saturation;
 	}
 
 	/**
@@ -218,35 +223,6 @@ public final class ObjBox {
 		setSideCoordinates(3, 0, 2, 1, w, -d, -w, d, -h);
 		setSideCoordinates(4, 2, 1, 0, d, h, -d, -h, w);
 		setSideCoordinates(5, 2, 1, 0, -d, h, d, -h, -w);
-	}
-
-	/**
-	 * Updates matrices based on given Model View and Projection matrices. This
-	 * method should be called before any rendering takes place, and most likely
-	 * after scene has been animated.
-	 * 
-	 * @param mvM
-	 *            Model View matrix
-	 * @param projM
-	 *            Projection matrix
-	 */
-	public final void updateMatrices(float[] viewM, float[] projM) {
-		if (mRecalculateModelM) {
-			android.opengl.Matrix.multiplyMM(mModelM, 0, mScaleM, 0, mRotateM,
-					0);
-			android.opengl.Matrix.multiplyMM(mModelM, 0, mTranslateM, 0,
-					mModelM, 0);
-			mRecalculateModelM = false;
-		}
-
-		// Add local model matrix to global model-view matrix.
-		android.opengl.Matrix.multiplyMM(mModelViewM, 0, viewM, 0, mModelM, 0);
-		// Fast inverse-transpose matrix calculation.
-		Matrix.invTransposeM(mNormalM, 0, mModelViewM, 0);
-		// Copy project matrix as-is.
-		for (int i = 0; i < 16; ++i) {
-			mProjM[i] = projM[i];
-		}
 	}
 
 }

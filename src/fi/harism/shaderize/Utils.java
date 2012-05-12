@@ -65,14 +65,17 @@ public class Utils {
 		int aPosition = shader.getHandle("aPosition");
 		int aNormal = shader.getHandle("aNormal");
 
-		for (ObjBox box : scene.getBoxes()) {
+		for (ObjScene.StructBox structBox : scene.getBoxes()) {
+			final ObjBox box = structBox.mBox;
+			box.calculate();
+
 			GLES20.glUniformMatrix4fv(uModelViewM, 1, false,
 					box.getModelViewM(), 0);
 			GLES20.glUniformMatrix4fv(uProjM, 1, false, box.getProjM(), 0);
 			GLES20.glUniformMatrix4fv(uNormalM, 1, false, box.getNormalM(), 0);
 
-			GLES20.glUniform3fv(uColor, 1, box.getColor(), 0);
-			GLES20.glUniform1f(uSaturation, box.getSaturation());
+			GLES20.glUniform3fv(uColor, 1, structBox.mColor, 0);
+			GLES20.glUniform1f(uSaturation, structBox.mSaturation);
 
 			FloatBuffer vertexBuffer = box.getBufferVertices();
 			vertexBuffer.position(0);

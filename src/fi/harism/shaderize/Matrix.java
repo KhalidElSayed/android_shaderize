@@ -86,22 +86,22 @@ public final class Matrix extends android.opengl.Matrix {
 	 *            Matrix float array
 	 * @param offset
 	 *            Matrix start offset
-	 * @param x
+	 * @param rx
 	 *            Rotation around x axis
-	 * @param y
+	 * @param ry
 	 *            Rotation around y axis
-	 * @param z
+	 * @param rz
 	 *            Rotation around z axis
 	 */
-	public static void setRotateM(float[] m, int offset, float x, float y,
-			float z) {
+	public static void setRotateM(float[] m, int offset, float rx, float ry,
+			float rz) {
 		double toRadians = Math.PI * 2 / 360;
-		double sin0 = Math.sin(x * toRadians);
-		double cos0 = Math.cos(x * toRadians);
-		double sin1 = Math.sin(y * toRadians);
-		double cos1 = Math.cos(y * toRadians);
-		double sin2 = Math.sin(z * toRadians);
-		double cos2 = Math.cos(z * toRadians);
+		double sin0 = Math.sin(rx * toRadians);
+		double cos0 = Math.cos(rx * toRadians);
+		double sin1 = Math.sin(ry * toRadians);
+		double cos1 = Math.cos(ry * toRadians);
+		double sin2 = Math.sin(rz * toRadians);
+		double cos2 = Math.cos(rz * toRadians);
 
 		android.opengl.Matrix.setIdentityM(m, offset);
 

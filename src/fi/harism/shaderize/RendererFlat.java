@@ -1,10 +1,7 @@
 package fi.harism.shaderize;
 
-import java.util.Vector;
-
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.opengl.GLES20;
 import android.view.ViewGroup;
 
 public class RendererFlat extends Renderer {
@@ -22,31 +19,7 @@ public class RendererFlat extends Renderer {
 	public void onDrawFrame(Fbo fbo, ObjScene scene) {
 		fbo.bind();
 		fbo.bindTexture(0);
-
-		GLES20.glDisable(GLES20.GL_BLEND);
-		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
-		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
-		GLES20.glEnable(GLES20.GL_CULL_FACE);
-		GLES20.glFrontFace(GLES20.GL_CCW);
-
-		mShaderFlat.useProgram();
-		int uModelViewProjM = mShaderFlat.getHandle("uModelViewProjM");
-		int uNormalM = mShaderFlat.getHandle("uNormalM");
-		int aPosition = mShaderFlat.getHandle("aPosition");
-		int aNormal = mShaderFlat.getHandle("aNormal");
-		int aColor = mShaderFlat.getHandle("aColor");
-
-		Vector<Obj> objs = scene.getObjs();
-		for (Obj obj : objs) {
-			GLES20.glUniformMatrix4fv(uModelViewProjM, 1, false,
-					obj.getModelViewProjM(), 0);
-			GLES20.glUniformMatrix4fv(uNormalM, 1, false, obj.getNormalM(), 0);
-			Utils.renderObj(obj, aPosition, aNormal, aColor);
-		}
-
-		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-		GLES20.glDisable(GLES20.GL_CULL_FACE);
+		Utils.renderScene(scene, mShaderFlat);
 	}
 
 	@Override

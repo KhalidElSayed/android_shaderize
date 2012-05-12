@@ -11,10 +11,10 @@ public abstract class Obj {
 	private final float[] mModelM = new float[16];
 	// World model-view matrix.
 	private final float[] mModelViewM = new float[16];
-	// World model-view-projection matrix.
-	private final float[] mModelViewProjM = new float[16];
 	// World normal matrix.
 	private final float[] mNormalM = new float[16];
+	// Projection matrix.
+	private final float[] mProjM = new float[16];
 
 	private boolean mRecalculateModelM;
 	// Local rotation matrix.
@@ -48,19 +48,8 @@ public abstract class Obj {
 	 * 
 	 * @return Current model-view matrix
 	 */
-	protected float[] getModelViewM() {
+	public final float[] getModelViewM() {
 		return mModelViewM;
-	}
-
-	/**
-	 * Getter for model-view-projection matrix. This matrix is calculated on
-	 * call to updateMatrices(..) which should be called before actual rendering
-	 * takes place.
-	 * 
-	 * @return Current model-view-projection matrix
-	 */
-	protected float[] getModelViewProjM() {
-		return mModelViewProjM;
 	}
 
 	/**
@@ -70,8 +59,19 @@ public abstract class Obj {
 	 * 
 	 * @return Current normal matrix
 	 */
-	protected float[] getNormalM() {
+	public final float[] getNormalM() {
 		return mNormalM;
+	}
+
+	/**
+	 * Getter for projection matrix. This matrix is stored during call to
+	 * updateMatrices(..) which should be called before actual rendering takes
+	 * place.
+	 * 
+	 * @return Current projection matrix
+	 */
+	public final float[] getProjM() {
+		return mProjM;
 	}
 
 	/**
@@ -140,10 +140,11 @@ public abstract class Obj {
 
 		// Add local model matrix to global model-view matrix.
 		android.opengl.Matrix.multiplyMM(mModelViewM, 0, viewM, 0, mModelM, 0);
-		// Apply projection matrix to global model-view matrix.
-		android.opengl.Matrix.multiplyMM(mModelViewProjM, 0, projM, 0,
-				mModelViewM, 0);
 		// Fast inverse-transpose matrix calculation.
 		Matrix.invTransposeM(mNormalM, 0, mModelViewM, 0);
+		// Copy project matrix as-is.
+		for (int i = 0; i < 16; ++i) {
+			mProjM[i] = projM[i];
+		}
 	}
 }

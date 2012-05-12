@@ -1,7 +1,5 @@
 package fi.harism.shaderize;
 
-import java.util.Vector;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLES20;
@@ -39,36 +37,7 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 	public void onDrawFrame(Fbo fbo, ObjScene scene) {
 		mFboFull.bind();
 		mFboFull.bindTexture(0);
-
-		GLES20.glClearColor(0f, 0f, 0f, 1f);
-		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-
-		GLES20.glDisable(GLES20.GL_BLEND);
-		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
-		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
-		GLES20.glEnable(GLES20.GL_CULL_FACE);
-		GLES20.glFrontFace(GLES20.GL_CCW);
-
-		mShaderBloomScene.useProgram();
-
-		int uModelViewProjM = mShaderBloomScene.getHandle("uModelViewProjM");
-		int uNormalM = mShaderBloomScene.getHandle("uNormalM");
-
-		int aPosition = mShaderBloomScene.getHandle("aPosition");
-		int aNormal = mShaderBloomScene.getHandle("aNormal");
-		int aColor = mShaderBloomScene.getHandle("aColor");
-
-		Vector<Obj> objs = scene.getObjs();
-		for (Obj obj : objs) {
-			GLES20.glUniformMatrix4fv(uModelViewProjM, 1, false,
-					obj.getModelViewProjM(), 0);
-			GLES20.glUniformMatrix4fv(uNormalM, 1, false, obj.getNormalM(), 0);
-			Utils.renderObj(obj, aPosition, aNormal, aColor);
-		}
-
-		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-		GLES20.glDisable(GLES20.GL_CULL_FACE);
+		Utils.renderScene(scene, mShaderBloomScene);
 
 		/**
 		 * Instantiate variables for bloom filter.
@@ -105,8 +74,7 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboFull.getTexture(0));
 
-		aPosition = mShaderBloomPass1.getHandle("aPosition");
-		Utils.renderFullQuad(aPosition);
+		Utils.renderQuad(mShaderBloomPass1.getHandle("aPosition"));
 
 		/**
 		 * Second pass, blur texture horizontally.
@@ -125,8 +93,7 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 		GLES20.glUniform2f(mShaderBloomPass2.getHandle("uBlurOffset"),
 				blurSizeH, 0f);
 
-		aPosition = mShaderBloomPass2.getHandle("aPosition");
-		Utils.renderFullQuad(aPosition);
+		Utils.renderQuad(mShaderBloomPass2.getHandle("aPosition"));
 
 		/**
 		 * Third pass, blur texture vertically.
@@ -138,7 +105,7 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 		GLES20.glUniform2f(mShaderBloomPass2.getHandle("uBlurOffset"), 0f,
 				blurSizeV);
 
-		Utils.renderFullQuad(aPosition);
+		Utils.renderQuad(mShaderBloomPass2.getHandle("aPosition"));
 
 		/**
 		 * Fourth pass, combine source texture and calculated bloom texture into
@@ -160,8 +127,7 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboFull.getTexture(0));
 		GLES20.glUniform1i(mShaderBloomPass3.getHandle("sTextureSource"), 1);
 
-		aPosition = mShaderBloomPass3.getHandle("aPosition");
-		Utils.renderFullQuad(aPosition);
+		Utils.renderQuad(mShaderBloomPass3.getHandle("aPosition"));
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package fi.harism.shaderize;
 
-import java.util.Vector;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLES20;
@@ -51,19 +49,7 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 		mFboFull.bind();
 		mFboFull.bindTexture(0);
 
-		GLES20.glClearColor(0f, 0f, 0f, 1f);
-		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-
-		GLES20.glDisable(GLES20.GL_BLEND);
-		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
-		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
-		GLES20.glEnable(GLES20.GL_CULL_FACE);
-		GLES20.glFrontFace(GLES20.GL_CCW);
-
 		mShaderScene.useProgram();
-		int uModelViewProjM = mShaderScene.getHandle("uModelViewProjM");
-		int uNormalM = mShaderScene.getHandle("uNormalM");
 
 		int uAperture = mShaderScene.getHandle("uAperture");
 		int uFocalLength = mShaderScene.getHandle("uFocalLength");
@@ -73,20 +59,7 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 		GLES20.glUniform1f(uFocalLength, mFocalLength);
 		GLES20.glUniform1f(uPlaneInFocus, mPlaneInFocus);
 
-		int aPosition = mShaderScene.getHandle("aPosition");
-		int aNormal = mShaderScene.getHandle("aNormal");
-		int aColor = mShaderScene.getHandle("aColor");
-
-		Vector<Obj> objs = scene.getObjs();
-		for (Obj obj : objs) {
-			GLES20.glUniformMatrix4fv(uModelViewProjM, 1, false,
-					obj.getModelViewProjM(), 0);
-			GLES20.glUniformMatrix4fv(uNormalM, 1, false, obj.getNormalM(), 0);
-			Utils.renderObj(obj, aPosition, aNormal, aColor);
-		}
-
-		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-		GLES20.glDisable(GLES20.GL_CULL_FACE);
+		Utils.renderScene(scene, mShaderScene);
 
 		/**
 		 * Depth of Field filter.
@@ -119,8 +92,8 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 		mShaderCopy.useProgram();
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboFull.getTexture(0));
-		GLES20.glUniform1i(mShaderCopy.getHandle("sTextureSource"), 0);
-		Utils.renderFullQuad(mShaderCopy.getHandle("aPosition"));
+		GLES20.glUniform1i(mShaderCopy.getHandle("sTexture"), 0);
+		Utils.renderQuad(mShaderCopy.getHandle("aPosition"));
 
 		// Second pass.
 		mFboHalf.bind();
@@ -131,7 +104,7 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 		GLES20.glUniform1i(mShaderPass1.getHandle("sTexture1"), 0);
 		GLES20.glUniform1f(mShaderPass1.getHandle("uSteps"), blurSteps);
 		GLES20.glUniform2fv(mShaderPass1.getHandle("uDelta0"), 1, dir[0], 0);
-		Utils.renderFullQuad(mShaderPass1.getHandle("aPosition"));
+		Utils.renderQuad(mShaderPass1.getHandle("aPosition"));
 
 		// Third pass.
 		mFboHalf.bindTexture(2);
@@ -144,7 +117,7 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 		GLES20.glUniform1f(mShaderPass2.getHandle("uSteps"), blurSteps);
 		GLES20.glUniform2fv(mShaderPass2.getHandle("uDelta0"), 1, dir[0], 0);
 		GLES20.glUniform2fv(mShaderPass2.getHandle("uDelta1"), 1, dir[1], 0);
-		Utils.renderFullQuad(mShaderPass2.getHandle("aPosition"));
+		Utils.renderQuad(mShaderPass2.getHandle("aPosition"));
 
 		// Fourth pass.
 		mFboHalf.bindTexture(0);
@@ -157,7 +130,7 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 		GLES20.glUniform1f(mShaderPass3.getHandle("uSteps"), blurSteps);
 		GLES20.glUniform2fv(mShaderPass3.getHandle("uDelta1"), 1, dir[1], 0);
 		GLES20.glUniform2fv(mShaderPass3.getHandle("uDelta2"), 1, dir[2], 0);
-		Utils.renderFullQuad(mShaderPass3.getHandle("aPosition"));
+		Utils.renderQuad(mShaderPass3.getHandle("aPosition"));
 
 		// Output pass.
 		fbo.bind();
@@ -166,7 +139,7 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFboHalf.getTexture(0));
 		GLES20.glUniform1i(mShaderCopy.getHandle("sTexture"), 0);
-		Utils.renderFullQuad(mShaderCopy.getHandle("aPosition"));
+		Utils.renderQuad(mShaderCopy.getHandle("aPosition"));
 	}
 
 	@Override

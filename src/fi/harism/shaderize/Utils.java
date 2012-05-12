@@ -35,34 +35,64 @@ public class Utils {
 		return min + (float) (Math.random() * (max - min));
 	}
 
-	public static final void renderFullQuad(int aPosition) {
+	public static final void renderQuad(int aPosition) {
 		GLES20.glVertexAttribPointer(aPosition, 2, GLES20.GL_BYTE, false, 0,
 				mFullQuadVertices);
 		GLES20.glEnableVertexAttribArray(aPosition);
 		GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 	}
 
-	public static final void renderObj(Obj obj, int aPosition, int aNormal,
-			int aColor) {
-		FloatBuffer vertexBuffer = obj.getBufferVertices();
-		vertexBuffer.position(0);
-		GLES20.glVertexAttribPointer(aPosition, 3, GLES20.GL_FLOAT, false, 0,
-				vertexBuffer);
-		GLES20.glEnableVertexAttribArray(aPosition);
+	public static final void renderScene(ObjScene scene, Shader shader) {
+		GLES20.glClearColor(0f, 0f, 0f, 1f);
+		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-		FloatBuffer normalBuffer = obj.getBufferNormals();
-		normalBuffer.position(0);
-		GLES20.glVertexAttribPointer(aNormal, 3, GLES20.GL_FLOAT, false, 0,
-				normalBuffer);
-		GLES20.glEnableVertexAttribArray(aNormal);
+		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
+		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
+		GLES20.glFrontFace(GLES20.GL_CCW);
 
-		FloatBuffer colorBuffer = obj.getBufferColors();
-		colorBuffer.position(0);
-		GLES20.glVertexAttribPointer(aColor, 3, GLES20.GL_FLOAT, false, 0,
-				colorBuffer);
-		GLES20.glEnableVertexAttribArray(aColor);
+		shader.useProgram();
 
-		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexBuffer.capacity() / 3);
+		int uModelViewM = shader.getHandle("uModelViewM");
+		int uProjM = shader.getHandle("uProjM");
+		int uNormalM = shader.getHandle("uNormalM");
+
+		int aPosition = shader.getHandle("aPosition");
+		int aNormal = shader.getHandle("aNormal");
+		int aColor = shader.getHandle("aColor");
+
+		for (Obj obj : scene.getObjs()) {
+			GLES20.glUniformMatrix4fv(uModelViewM, 1, false,
+					obj.getModelViewM(), 0);
+			GLES20.glUniformMatrix4fv(uProjM, 1, false, obj.getProjM(), 0);
+			GLES20.glUniformMatrix4fv(uNormalM, 1, false, obj.getNormalM(), 0);
+
+			FloatBuffer vertexBuffer = obj.getBufferVertices();
+			vertexBuffer.position(0);
+			GLES20.glVertexAttribPointer(aPosition, 3, GLES20.GL_FLOAT, false,
+					0, vertexBuffer);
+			GLES20.glEnableVertexAttribArray(aPosition);
+
+			FloatBuffer normalBuffer = obj.getBufferNormals();
+			normalBuffer.position(0);
+			GLES20.glVertexAttribPointer(aNormal, 3, GLES20.GL_FLOAT, false, 0,
+					normalBuffer);
+			GLES20.glEnableVertexAttribArray(aNormal);
+
+			FloatBuffer colorBuffer = obj.getBufferColors();
+			colorBuffer.position(0);
+			GLES20.glVertexAttribPointer(aColor, 3, GLES20.GL_FLOAT, false, 0,
+					colorBuffer);
+			GLES20.glEnableVertexAttribArray(aColor);
+
+			GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0,
+					vertexBuffer.capacity() / 3);
+		}
+
+		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+		GLES20.glDisable(GLES20.GL_CULL_FACE);
 	}
 
 }

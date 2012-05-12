@@ -1,7 +1,5 @@
 package fi.harism.shaderize;
 
-import java.util.Vector;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLES20;
@@ -30,13 +28,6 @@ public class RendererLightning extends Renderer implements
 	public void onDrawFrame(Fbo fbo, ObjScene scene) {
 		fbo.bind();
 		fbo.bindTexture(0);
-
-		GLES20.glDisable(GLES20.GL_BLEND);
-		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
-		GLES20.glEnable(GLES20.GL_CULL_FACE);
-		GLES20.glFrontFace(GLES20.GL_CCW);
-
 		mShaderLightning.useProgram();
 
 		int uAmbientFactor = mShaderLightning.getHandle("uAmbientFactor");
@@ -49,27 +40,7 @@ public class RendererLightning extends Renderer implements
 		GLES20.glUniform1f(uSpecularFactor, mSpecularFactor);
 		GLES20.glUniform1f(uShininess, mShininess * 16f);
 
-		int uModelViewProjM = mShaderLightning.getHandle("uModelViewProjM");
-		int uModelViewM = mShaderLightning.getHandle("uModelViewM");
-		int uNormalM = mShaderLightning.getHandle("uNormalM");
-
-		int aPosition = mShaderLightning.getHandle("aPosition");
-		int aNormal = mShaderLightning.getHandle("aNormal");
-		int aColor = mShaderLightning.getHandle("aColor");
-
-		Vector<Obj> objs = scene.getObjs();
-		for (Obj obj : objs) {
-			GLES20.glUniformMatrix4fv(uModelViewProjM, 1, false,
-					obj.getModelViewProjM(), 0);
-			GLES20.glUniformMatrix4fv(uModelViewM, 1, false,
-					obj.getModelViewM(), 0);
-			GLES20.glUniformMatrix4fv(uNormalM, 1, false, obj.getNormalM(), 0);
-
-			Utils.renderObj(obj, aPosition, aNormal, aColor);
-		}
-
-		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-		GLES20.glDisable(GLES20.GL_CULL_FACE);
+		Utils.renderScene(scene, mShaderLightning);
 	}
 
 	@Override

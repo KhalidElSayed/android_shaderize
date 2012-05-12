@@ -90,8 +90,6 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 		mFboMain.bind();
 		mFboMain.bindTexture(0);
-		GLES20.glClearColor(0f, 0f, 0f, 1f);
-		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
 		Vector<Obj> objs = mObjScene.getObjs();
 		for (Obj obj : objs) {

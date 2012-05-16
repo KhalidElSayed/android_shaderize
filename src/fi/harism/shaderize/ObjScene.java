@@ -134,6 +134,5 @@ public class ObjScene {
 		public final float mRotation[] = new float[3];
 		private final float mRotationAnim[] = new float[6];
 		public float mSaturation;
-		private boolean mSaturationTick;
 	}
 }

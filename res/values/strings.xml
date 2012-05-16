@@ -39,6 +39,8 @@ harism@gmail.com</string>
     <string name="shader_fxaa_info">FXAA anti-aliasing filter.</string>
     <string name="shader_dof_name">Depth of Field Shader</string>
     <string name="shader_dof_info">Depth of Field over flat rendered source.</string>
+    <string name="shader_hex_name">Hexagonal Fill Shader</string>
+    <string name="shader_hex_info">Hexagonal Filled flat rendered source.</string>
 
     <!-- Preference strings -->
     <string name="prefs_flat_saturation">Grayscale Saturation Value</string>
@@ -53,6 +55,7 @@ harism@gmail.com</string>
     <string name="prefs_dof_radius">Lens Blur Radius</string>
     <string name="prefs_dof_fstop">Lens Blur F/Stop</string>
     <string name="prefs_dof_fplane">Lens Blur Focal Plane</string>
+    <string name="prefs_hex_radius">Hexagon Radius Value</string>
 
     <!-- Prefererence keys -->
     <string name="prefs_key_shader">prefs_key_shader</string>
@@ -68,6 +71,7 @@ harism@gmail.com</string>
     <string name="prefs_key_dof_radius">prefs_key_dof_radius</string>
     <string name="prefs_key_dof_fstop">prefs_key_dof_fstop</string>
     <string name="prefs_key_dof_fplane">prefs_key_dof_fplane</string>
+    <string name="prefs_key_hex_radius">prefs_key_hex_radius</string>
 
     <!-- Error strings -->
     <string name="error_shader_compiler">Error, shader compiler not supported.</string>

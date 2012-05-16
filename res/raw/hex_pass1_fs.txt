@@ -1,0 +1,45 @@
+
+precision mediump float;
+
+uniform sampler2D sTexture;
+uniform float uRadius;
+uniform vec2 uTextureSize;
+
+varying vec2 vTextureCoord;
+
+void main() {
+	vec2 tex = (vTextureCoord * uTextureSize) / uRadius;
+	tex.x -= tex.y * 0.5;
+	
+	vec2 a;
+	if (tex.x + tex.y - floor(tex.x) - floor(tex.y) < 1.0) {
+		a = floor(tex);
+	} else {
+		a = ceil(tex);
+	}
+	vec2 b = vec2(ceil(tex.x), floor(tex.y));
+	vec2 c = vec2(floor(tex.x), ceil(tex.y));
+	
+	vec3 TEX = vec3(tex, 1.0 - tex.x - tex.y);
+	vec3 A = vec3(a, 1.0 - a.x - a.y);
+	vec3 B = vec3(b, 1.0 - b.x - b.y);
+	vec3 C = vec3(c, 1.0 - c.x - c.y);
+	
+	float alen = distance(TEX, A);
+	float blen = distance(TEX, B);
+	float clen = distance(TEX, C);
+	
+	vec2 choice = a;
+	if (alen > blen) {
+		choice = b;
+		alen = blen;
+	}
+	if (alen > clen) {
+		choice = c;
+	}
+	
+	choice.x += choice.y * 0.5;
+	choice *= uRadius / uTextureSize;
+	
+	gl_FragColor = texture2D(sTexture, choice);
+}

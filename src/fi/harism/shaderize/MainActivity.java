@@ -42,7 +42,9 @@ public class MainActivity extends Activity {
 			new StructShader(R.string.shader_fxaa_name,
 					R.string.shader_fxaa_info, RendererFxaa.class.getName()),
 			new StructShader(R.string.shader_dof_name,
-					R.string.shader_dof_info, RendererDof.class.getName()) };
+					R.string.shader_dof_info, RendererDof.class.getName()),
+			new StructShader(R.string.shader_hex_name,
+					R.string.shader_hex_info, RendererHex.class.getName()) };
 
 	private GLSurfaceView mGLSurfaceView;
 	private MainRenderer mMainRenderer;
@@ -105,9 +107,13 @@ public class MainActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		// Force full screen view.
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().clearFlags(
+				WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+
 		setContentView(R.layout.main);
 
 		mTextViewTitle = (TextView) findViewById(R.id.text_title);

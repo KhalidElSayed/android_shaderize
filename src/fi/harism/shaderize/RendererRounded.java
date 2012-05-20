@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 public class RendererRounded extends Renderer {
 
 	private Context mContext;
-	private final Shader mShaderCube = new Shader();
+	private final ObjShader mShaderCube = new ObjShader();
 
 	@Override
 	public void onDestroy() {
@@ -16,7 +16,7 @@ public class RendererRounded extends Renderer {
 	}
 
 	@Override
-	public void onDrawFrame(Fbo fbo, ObjScene scene) {
+	public void onDrawFrame(ObjFbo fbo, ObjScene scene) {
 		fbo.bind();
 		fbo.bindTexture(0);
 		Utils.renderScene(scene, mShaderCube);
@@ -30,8 +30,7 @@ public class RendererRounded extends Renderer {
 	public void onSurfaceCreated() throws Exception {
 		String vertexSource, fragmentSource;
 		vertexSource = Utils.loadRawResource(mContext, R.raw.rounded_cube_vs);
-		fragmentSource = Utils
-				.loadRawResource(mContext, R.raw.rounded_cube_fs);
+		fragmentSource = Utils.loadRawResource(mContext, R.raw.rounded_cube_fs);
 		mShaderCube.setProgram(vertexSource, fragmentSource);
 	}
 

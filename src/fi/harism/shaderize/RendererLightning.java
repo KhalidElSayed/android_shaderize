@@ -14,7 +14,7 @@ public class RendererLightning extends Renderer implements
 
 	private float mDiffuseFactor;
 
-	private final Shader mShaderCube = new Shader();
+	private final ObjShader mShaderCube = new ObjShader();
 	private float mShininess;
 	private float mSpecularFactor;
 
@@ -25,7 +25,7 @@ public class RendererLightning extends Renderer implements
 	}
 
 	@Override
-	public void onDrawFrame(Fbo fbo, ObjScene scene) {
+	public void onDrawFrame(ObjFbo fbo, ObjScene scene) {
 		fbo.bind();
 		fbo.bindTexture(0);
 		mShaderCube.useProgram();
@@ -65,8 +65,7 @@ public class RendererLightning extends Renderer implements
 	@Override
 	public void onSurfaceCreated() throws Exception {
 		String vertexSource, fragmentSource;
-		vertexSource = Utils
-				.loadRawResource(mContext, R.raw.lightning_cube_vs);
+		vertexSource = Utils.loadRawResource(mContext, R.raw.lightning_cube_vs);
 		fragmentSource = Utils.loadRawResource(mContext,
 				R.raw.lightning_cube_fs);
 		mShaderCube.setProgram(vertexSource, fragmentSource);

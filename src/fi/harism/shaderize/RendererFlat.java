@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 public class RendererFlat extends Renderer {
 
 	private Context mContext;
-	private final Shader mShaderCube = new Shader();
+	private final ObjShader mShaderCube = new ObjShader();
 
 	@Override
 	public void onDestroy() {
@@ -16,7 +16,7 @@ public class RendererFlat extends Renderer {
 	}
 
 	@Override
-	public void onDrawFrame(Fbo fbo, ObjScene scene) {
+	public void onDrawFrame(ObjFbo fbo, ObjScene scene) {
 		fbo.bind();
 		fbo.bindTexture(0);
 		Utils.renderScene(scene, mShaderCube);

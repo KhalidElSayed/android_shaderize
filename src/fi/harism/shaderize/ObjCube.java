@@ -8,12 +8,12 @@ public final class ObjCube {
 
 	private static final int FACE_COUNT = 6;
 	private static final int FLOAT_SIZE_BYTES = 4;
-	private static final int FLOATS_PER_VERTEX = 3;
 	private static final int FLOATS_PER_TEXPOS = 2;
+	private static final int FLOATS_PER_VERTEX = 3;
 	private static final int VERTICES_PER_FACE = 6;
 	private FloatBuffer mBufferNormal;
-	private FloatBuffer mBufferVertex;
 	private FloatBuffer mBufferTexPosition;
+	private FloatBuffer mBufferVertex;
 	// Local model matrix.
 	private final float[] mModelM = new float[16];
 
@@ -106,12 +106,12 @@ public final class ObjCube {
 		return mBufferNormal;
 	}
 
-	public final FloatBuffer getBufferVertices() {
-		return mBufferVertex;
-	}
-
 	public final FloatBuffer getBufferTexPositions() {
 		return mBufferTexPosition;
+	}
+
+	public final FloatBuffer getBufferVertices() {
+		return mBufferVertex;
 	}
 
 	/**

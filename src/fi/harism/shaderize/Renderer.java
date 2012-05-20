@@ -10,7 +10,7 @@ public abstract class Renderer {
 
 	public abstract void onDestroy();
 
-	public abstract void onDrawFrame(Fbo fbo, ObjScene scene);
+	public abstract void onDrawFrame(ObjFbo fbo, ObjScene scene);
 
 	public abstract void onSurfaceChanged(int width, int height)
 			throws Exception;

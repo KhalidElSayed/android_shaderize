@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 public class RendererFxaa extends Renderer implements PrefsSeekBar.Observer {
 
 	private Context mContext;
-	private final Fbo mFboFull = new Fbo();
-	private final Shader mShaderPass1 = new Shader();
-	private final Shader mShaderCube = new Shader();
+	private final ObjFbo mFboFull = new ObjFbo();
+	private final ObjShader mShaderCube = new ObjShader();
+	private final ObjShader mShaderPass1 = new ObjShader();
 
 	@Override
 	public void onDestroy() {
@@ -21,7 +21,7 @@ public class RendererFxaa extends Renderer implements PrefsSeekBar.Observer {
 	}
 
 	@Override
-	public void onDrawFrame(Fbo fbo, ObjScene scene) {
+	public void onDrawFrame(ObjFbo fbo, ObjScene scene) {
 		mFboFull.bind();
 		mFboFull.bindTexture(0);
 		Utils.renderScene(scene, mShaderCube);

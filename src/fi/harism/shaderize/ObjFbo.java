@@ -5,7 +5,7 @@ import android.opengl.GLES20;
 /**
  * Helper class for handling frame buffer objects.
  */
-public final class Fbo {
+public final class ObjFbo {
 
 	// Optional depth buffer handle.
 	private int mDepthBufferHandle = -1;

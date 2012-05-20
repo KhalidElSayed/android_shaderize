@@ -9,15 +9,15 @@ import android.view.ViewGroup;
 public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 
 	private Context mContext;
-	private final Fbo mFboFull = new Fbo();
+	private final ObjFbo mFboFull = new ObjFbo();
 
-	private final Fbo mFboQuarter = new Fbo();
+	private final ObjFbo mFboQuarter = new ObjFbo();
 	private float mRadius;
 
-	private final Shader mShaderPass1 = new Shader();
-	private final Shader mShaderPass2 = new Shader();
-	private final Shader mShaderPass3 = new Shader();
-	private final Shader mShaderCube = new Shader();
+	private final ObjShader mShaderCube = new ObjShader();
+	private final ObjShader mShaderPass1 = new ObjShader();
+	private final ObjShader mShaderPass2 = new ObjShader();
+	private final ObjShader mShaderPass3 = new ObjShader();
 
 	private float mSourceIntensity, mBloomIntensity;
 	private float mThreshold;
@@ -34,7 +34,7 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 	}
 
 	@Override
-	public void onDrawFrame(Fbo fbo, ObjScene scene) {
+	public void onDrawFrame(ObjFbo fbo, ObjScene scene) {
 		mFboFull.bind();
 		mFboFull.bindTexture(0);
 		Utils.renderScene(scene, mShaderCube);

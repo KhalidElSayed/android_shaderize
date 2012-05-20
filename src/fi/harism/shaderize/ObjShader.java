@@ -8,7 +8,7 @@ import android.util.Log;
 /**
  * Helper class for handling shaders.
  */
-public final class Shader {
+public final class ObjShader {
 
 	// Shader program handles.
 	private int mProgram = 0;

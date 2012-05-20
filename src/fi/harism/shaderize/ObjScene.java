@@ -9,14 +9,14 @@ public class ObjScene {
 	private final long BOX_ROTATION_LENGTH = 7000;
 	private final long CAMERA_ANIM_LENGTH = 5000;
 
-	private final Vector<StructCube> mCubes = new Vector<StructCube>();
-
 	private long mBoxRotationStart;
+
 	private long mCameraAnimStart;
 	private final float mCameraPosition[] = new float[3];
 	private final float mCameraPositionAnim[] = new float[6];
 	private final float mCameraProjM[] = new float[16];
 	private final float mCameraViewM[] = new float[16];
+	private final Vector<StructCube> mCubes = new Vector<StructCube>();
 	private long mSaturationTime;
 
 	public ObjScene() {
@@ -127,8 +127,8 @@ public class ObjScene {
 	}
 
 	public static class StructCube {
-		public final ObjCube mCube = new ObjCube();
 		public final float mColor[] = new float[3];
+		public final ObjCube mCube = new ObjCube();
 		public final float mLocation[] = new float[3];
 		private final float mLocationAnim[] = new float[6];
 		public final float mRotation[] = new float[3];

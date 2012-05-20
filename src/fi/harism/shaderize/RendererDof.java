@@ -11,19 +11,19 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 	private float mAperture;
 
 	private Context mContext;
-	private final Fbo mFboFull = new Fbo();
-	private final Fbo mFboHalf = new Fbo();
+	private final ObjFbo mFboFull = new ObjFbo();
+	private final ObjFbo mFboHalf = new ObjFbo();
 	private float mFocalLength;
 	private float mFStop;
 
 	private float mPlaneInFocus;
 	private float mRadius;
 
-	private final Shader mShaderCopy = new Shader();
-	private final Shader mShaderPass1 = new Shader();
-	private final Shader mShaderPass2 = new Shader();
-	private final Shader mShaderPass3 = new Shader();
-	private final Shader mShaderScene = new Shader();
+	private final ObjShader mShaderCopy = new ObjShader();
+	private final ObjShader mShaderPass1 = new ObjShader();
+	private final ObjShader mShaderPass2 = new ObjShader();
+	private final ObjShader mShaderPass3 = new ObjShader();
+	private final ObjShader mShaderScene = new ObjShader();
 
 	@Override
 	public void onDestroy() {
@@ -40,7 +40,7 @@ public class RendererDof extends Renderer implements PrefsSeekBar.Observer {
 	}
 
 	@Override
-	public void onDrawFrame(Fbo fbo, ObjScene scene) {
+	public void onDrawFrame(ObjFbo fbo, ObjScene scene) {
 
 		/**
 		 * Regular flat 3d -scene with CoC information stored into alpha.

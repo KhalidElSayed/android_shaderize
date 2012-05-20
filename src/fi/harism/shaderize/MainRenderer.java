@@ -17,7 +17,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	private static final int TRANSITION_TIME = 1000;
 
 	private Context mContext;
-	private final Fbo mFboMain = new Fbo();
+	private final ObjFbo mFboMain = new ObjFbo();
 	// private RendererFilter mFilterCurrent = null;
 	private final Vector<Renderer> mFilters = new Vector<Renderer>();
 
@@ -25,7 +25,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 	private final ObjScene mObjScene = new ObjScene();
 	private final boolean mShaderCompilerSupported[] = new boolean[1];
-	private final Shader mShaderCopy = new Shader();
+	private final ObjShader mShaderCopy = new ObjShader();
 
 	private long mTimeLastRender;
 	private long mTimeSwitchStart;

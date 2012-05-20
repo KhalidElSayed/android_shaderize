@@ -10,12 +10,12 @@ public class RendererFxaa extends Renderer implements PrefsSeekBar.Observer {
 	private Context mContext;
 	private final Fbo mFboFull = new Fbo();
 	private final Shader mShaderPass1 = new Shader();
-	private final Shader mShaderScene = new Shader();
+	private final Shader mShaderCube = new Shader();
 
 	@Override
 	public void onDestroy() {
 		mContext = null;
-		mShaderScene.deleteProgram();
+		mShaderCube.deleteProgram();
 		mShaderPass1.deleteProgram();
 		mFboFull.reset();
 	}
@@ -24,7 +24,7 @@ public class RendererFxaa extends Renderer implements PrefsSeekBar.Observer {
 	public void onDrawFrame(Fbo fbo, ObjScene scene) {
 		mFboFull.bind();
 		mFboFull.bindTexture(0);
-		Utils.renderScene(scene, mShaderScene);
+		Utils.renderScene(scene, mShaderCube);
 
 		final float N = 0.5f;
 		final float rcpOptW = N / fbo.getWidth();
@@ -61,9 +61,9 @@ public class RendererFxaa extends Renderer implements PrefsSeekBar.Observer {
 	@Override
 	public void onSurfaceCreated() throws Exception {
 		String vertexSource, fragmentSource;
-		vertexSource = Utils.loadRawResource(mContext, R.raw.flat_scene_vs);
-		fragmentSource = Utils.loadRawResource(mContext, R.raw.flat_scene_fs);
-		mShaderScene.setProgram(vertexSource, fragmentSource);
+		vertexSource = Utils.loadRawResource(mContext, R.raw.flat_cube_vs);
+		fragmentSource = Utils.loadRawResource(mContext, R.raw.flat_cube_fs);
+		mShaderCube.setProgram(vertexSource, fragmentSource);
 		vertexSource = Utils.loadRawResource(mContext, R.raw.fxaa_pass1_vs);
 		fragmentSource = Utils.loadRawResource(mContext, R.raw.fxaa_pass1_fs);
 		mShaderPass1.setProgram(vertexSource, fragmentSource);

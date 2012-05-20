@@ -8,6 +8,7 @@ uniform float uSaturation;
 
 attribute vec3 aPosition;
 attribute vec3 aNormal;
+attribute vec2 aTexPosition;
 
 varying vec4 vPosition;
 varying vec4 vNormal;

@@ -11,13 +11,13 @@ public class RendererHex extends Renderer implements PrefsSeekBar.Observer {
 	private Context mContext;
 	private final Fbo mFboFull = new Fbo();
 	private float mRadius = 1f;
-	private final Shader mShaderFlat = new Shader();
+	private final Shader mShaderCube = new Shader();
 	private final Shader mShaderHex = new Shader();
 
 	@Override
 	public void onDestroy() {
 		mContext = null;
-		mShaderFlat.deleteProgram();
+		mShaderCube.deleteProgram();
 		mFboFull.reset();
 	}
 
@@ -25,7 +25,7 @@ public class RendererHex extends Renderer implements PrefsSeekBar.Observer {
 	public void onDrawFrame(Fbo fbo, ObjScene scene) {
 		mFboFull.bind();
 		mFboFull.bindTexture(0);
-		Utils.renderScene(scene, mShaderFlat);
+		Utils.renderScene(scene, mShaderCube);
 
 		fbo.bind();
 		fbo.bindTexture(0);
@@ -61,9 +61,9 @@ public class RendererHex extends Renderer implements PrefsSeekBar.Observer {
 	@Override
 	public void onSurfaceCreated() throws Exception {
 		String vertexSource, fragmentSource;
-		vertexSource = Utils.loadRawResource(mContext, R.raw.flat_scene_vs);
-		fragmentSource = Utils.loadRawResource(mContext, R.raw.flat_scene_fs);
-		mShaderFlat.setProgram(vertexSource, fragmentSource);
+		vertexSource = Utils.loadRawResource(mContext, R.raw.flat_cube_vs);
+		fragmentSource = Utils.loadRawResource(mContext, R.raw.flat_cube_fs);
+		mShaderCube.setProgram(vertexSource, fragmentSource);
 		vertexSource = Utils.loadRawResource(mContext, R.raw.hex_quad_vs);
 		fragmentSource = Utils.loadRawResource(mContext, R.raw.hex_pass1_fs);
 		mShaderHex.setProgram(vertexSource, fragmentSource);

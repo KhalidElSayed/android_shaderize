@@ -17,7 +17,7 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 	private final Shader mShaderPass1 = new Shader();
 	private final Shader mShaderPass2 = new Shader();
 	private final Shader mShaderPass3 = new Shader();
-	private final Shader mShaderScene = new Shader();
+	private final Shader mShaderCube = new Shader();
 
 	private float mSourceIntensity, mBloomIntensity;
 	private float mThreshold;
@@ -27,7 +27,7 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 		mContext = null;
 		mFboFull.reset();
 		mFboQuarter.reset();
-		mShaderScene.deleteProgram();
+		mShaderCube.deleteProgram();
 		mShaderPass1.deleteProgram();
 		mShaderPass2.deleteProgram();
 		mShaderPass3.deleteProgram();
@@ -37,7 +37,7 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 	public void onDrawFrame(Fbo fbo, ObjScene scene) {
 		mFboFull.bind();
 		mFboFull.bindTexture(0);
-		Utils.renderScene(scene, mShaderScene);
+		Utils.renderScene(scene, mShaderCube);
 
 		/**
 		 * Instantiate variables for bloom filter.
@@ -154,9 +154,9 @@ public class RendererBloom extends Renderer implements PrefsSeekBar.Observer {
 	@Override
 	public void onSurfaceCreated() throws Exception {
 		String vertexSource, fragmentSource;
-		vertexSource = Utils.loadRawResource(mContext, R.raw.flat_scene_vs);
-		fragmentSource = Utils.loadRawResource(mContext, R.raw.flat_scene_fs);
-		mShaderScene.setProgram(vertexSource, fragmentSource);
+		vertexSource = Utils.loadRawResource(mContext, R.raw.flat_cube_vs);
+		fragmentSource = Utils.loadRawResource(mContext, R.raw.flat_cube_fs);
+		mShaderCube.setProgram(vertexSource, fragmentSource);
 		vertexSource = Utils.loadRawResource(mContext, R.raw.bloom_quad_vs);
 		fragmentSource = Utils.loadRawResource(mContext, R.raw.bloom_pass1_fs);
 		mShaderPass1.setProgram(vertexSource, fragmentSource);

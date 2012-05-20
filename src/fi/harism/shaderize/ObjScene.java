@@ -9,7 +9,7 @@ public class ObjScene {
 	private final long BOX_ROTATION_LENGTH = 7000;
 	private final long CAMERA_ANIM_LENGTH = 5000;
 
-	private final Vector<StructBox> mBoxes = new Vector<StructBox>();
+	private final Vector<StructCube> mCubes = new Vector<StructCube>();
 
 	private long mBoxRotationStart;
 	private long mCameraAnimStart;
@@ -20,21 +20,21 @@ public class ObjScene {
 	private long mSaturationTime;
 
 	public ObjScene() {
-		StructBox box = new StructBox();
-		box.mBox.setSize(-10f, -10f, -10f);
-		mBoxes.add(box);
+		StructCube cube = new StructCube();
+		cube.mCube.setScaling(-5f);
+		mCubes.add(cube);
 
 		for (int i = 0; i < 100; ++i) {
-			box = new StructBox();
-			box.mBox.setSize(.4f, .4f, .4f);
+			cube = new StructCube();
+			cube.mCube.setScaling(.2f);
 			for (int j = 0; j < 3; ++j) {
-				box.mLocation[j] = box.mLocationAnim[j + 3] = Utils.rand(-4f,
+				cube.mLocation[j] = cube.mLocationAnim[j + 3] = Utils.rand(-4f,
 						4f);
 			}
-			mBoxes.add(box);
+			mCubes.add(cube);
 		}
 
-		for (StructBox b : mBoxes) {
+		for (StructCube b : mCubes) {
 			b.mColor[0] = .9f;
 			b.mColor[1] = Utils.rand(0, 1f) < .5f ? .7f : .9f;
 			b.mColor[2] = Utils.rand(0, 1f) < .5f ? 0f : .4f;
@@ -68,8 +68,8 @@ public class ObjScene {
 
 		if (currentTime > mBoxRotationStart + BOX_ROTATION_LENGTH) {
 			mBoxRotationStart = currentTime;
-			for (int i = 1; i < mBoxes.size(); ++i) {
-				StructBox box = mBoxes.get(i);
+			for (int i = 1; i < mCubes.size(); ++i) {
+				StructCube box = mCubes.get(i);
 				for (int j = 0; j < 3; ++j) {
 					box.mRotationAnim[j] = box.mRotationAnim[j + 3];
 					if (Utils.rand(0f, 1f) < 0.3f) {
@@ -80,34 +80,34 @@ public class ObjScene {
 		}
 		t = (float) (currentTime - mBoxRotationStart) / BOX_ROTATION_LENGTH;
 		t = t * t * (3 - 2 * t);
-		for (int i = 1; i < mBoxes.size(); ++i) {
-			StructBox box = mBoxes.get(i);
+		for (int i = 1; i < mCubes.size(); ++i) {
+			StructCube box = mCubes.get(i);
 			interpolate(box.mRotation, box.mRotationAnim, t);
 		}
 
 		if (Utils.rand(0f, 1f) < (currentTime - mSaturationTime) / 200f) {
 			for (int i = 0; i < 3; ++i) {
-				mBoxes.get((int) Utils.rand(0f, mBoxes.size())).mSaturation = 1f;
+				mCubes.get((int) Utils.rand(0f, mCubes.size())).mSaturation = 1f;
 			}
 		}
 		t = Math.max(0f, 1f - (currentTime - mSaturationTime) * .001f);
 		mSaturationTime = currentTime;
 
-		for (StructBox box : mBoxes) {
+		for (StructCube box : mCubes) {
 			box.mSaturation *= t;
 		}
 
-		for (StructBox box : mBoxes) {
-			box.mBox.setMatrices(mCameraViewM, mCameraProjM);
-			box.mBox.setPosition(box.mLocation[0], box.mLocation[1],
+		for (StructCube box : mCubes) {
+			box.mCube.setMatrices(mCameraViewM, mCameraProjM);
+			box.mCube.setPosition(box.mLocation[0], box.mLocation[1],
 					box.mLocation[2]);
-			box.mBox.setRotation(box.mRotation[0], box.mRotation[1],
+			box.mCube.setRotation(box.mRotation[0], box.mRotation[1],
 					box.mRotation[2]);
 		}
 	}
 
-	public Vector<StructBox> getBoxes() {
-		return mBoxes;
+	public Vector<StructCube> getCubes() {
+		return mCubes;
 	}
 
 	private final void interpolate(float dst[], float srcAnim[], float t) {
@@ -126,8 +126,8 @@ public class ObjScene {
 				20f);
 	}
 
-	public static class StructBox {
-		public final ObjBox mBox = new ObjBox();
+	public static class StructCube {
+		public final ObjCube mCube = new ObjCube();
 		public final float mColor[] = new float[3];
 		public final float mLocation[] = new float[3];
 		private final float mLocationAnim[] = new float[6];

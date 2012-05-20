@@ -45,9 +45,9 @@ public class MainActivity extends Activity {
 					R.string.shader_dof_info, RendererDof.class.getName()),
 			new StructShader(R.string.shader_hex_name,
 					R.string.shader_hex_info, RendererHex.class.getName()),
-			new StructShader(R.string.shader_bumpmap_name,
-					R.string.shader_bumpmap_info,
-					RendererBumpMap.class.getName()) };
+			new StructShader(R.string.shader_rounded_name,
+					R.string.shader_rounded_info,
+					RendererRounded.class.getName()) };
 
 	private GLSurfaceView mGLSurfaceView;
 	private MainRenderer mMainRenderer;

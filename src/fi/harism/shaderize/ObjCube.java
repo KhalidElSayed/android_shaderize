@@ -4,19 +4,21 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-public final class ObjBox {
+public final class ObjCube {
 
 	private static final int FACE_COUNT = 6;
 	private static final int FLOAT_SIZE_BYTES = 4;
 	private static final int FLOATS_PER_VERTEX = 3;
+	private static final int FLOATS_PER_TEXPOS = 2;
 	private static final int VERTICES_PER_FACE = 6;
-
+	private FloatBuffer mBufferNormal;
+	private FloatBuffer mBufferVertex;
+	private FloatBuffer mBufferTexPosition;
 	// Local model matrix.
 	private final float[] mModelM = new float[16];
+
 	// World model-view matrix.
 	private final float[] mModelViewM = new float[16];
-	private FloatBuffer mNormalBuffer;
-
 	// World normal matrix.
 	private final float[] mNormalM = new float[16];
 	// Projection matrix.
@@ -28,25 +30,50 @@ public final class ObjBox {
 	private final float[] mScaleM = new float[16];
 	// Local translation matrix.
 	private final float[] mTranslateM = new float[16];
-	private FloatBuffer mVertexBuffer;
 	private final float[] mViewM = new float[16];
 
-	public ObjBox() {
-		int sz = FACE_COUNT * VERTICES_PER_FACE * FLOATS_PER_VERTEX
-				* FLOAT_SIZE_BYTES;
+	public ObjCube() {
+		int sz = FLOAT_SIZE_BYTES * FLOATS_PER_VERTEX * FACE_COUNT
+				* VERTICES_PER_FACE;
+
 		ByteBuffer buffer = ByteBuffer.allocateDirect(sz);
-		mVertexBuffer = buffer.order(ByteOrder.nativeOrder()).asFloatBuffer();
+		mBufferVertex = buffer.order(ByteOrder.nativeOrder()).asFloatBuffer();
+
 		buffer = ByteBuffer.allocateDirect(sz);
-		mNormalBuffer = buffer.order(ByteOrder.nativeOrder()).asFloatBuffer();
+		mBufferNormal = buffer.order(ByteOrder.nativeOrder()).asFloatBuffer();
 
-		setNormal(0, 0f, 0f, 1f);
-		setNormal(1, 0f, 0f, -1f);
-		setNormal(2, 0f, 1f, 0f);
-		setNormal(3, 0f, -1f, 0f);
-		setNormal(4, 1f, 0f, 0f);
-		setNormal(5, -1f, 0f, 0f);
+		sz = FLOAT_SIZE_BYTES * FLOATS_PER_TEXPOS * FACE_COUNT
+				* VERTICES_PER_FACE;
 
-		setSize(1f, 1f, 1f);
+		buffer = ByteBuffer.allocateDirect(sz);
+		mBufferTexPosition = buffer.order(ByteOrder.nativeOrder())
+				.asFloatBuffer();
+
+		final float VERTICES[][] = { { -1, 1, 1 }, { -1, -1, 1 }, { 1, 1, 1 },
+				{ 1, -1, 1 }, { -1, 1, -1 }, { -1, -1, -1 }, { 1, 1, -1 },
+				{ 1, -1, -1 } };
+		final float NORMALS[][] = { { 0, 0, 1 }, { 0, 0, -1 }, { -1, 0, 0 },
+				{ 1, 0, 0 }, { 0, 1, 0 }, { 0, -1, 0 } };
+		final float TEXPOS[][] = { { 0, 1 }, { 0, 0 }, { 1, 1 }, { 0, 0 },
+				{ 1, 0 }, { 1, 1 } };
+		final int INDICES[][][] = { { { 0, 1, 2, 1, 3, 2 }, { 0 } },
+				{ { 5, 4, 7, 4, 6, 7 }, { 1 } },
+				{ { 0, 4, 1, 4, 5, 1 }, { 2 } },
+				{ { 3, 7, 2, 7, 6, 2 }, { 3 } },
+				{ { 2, 6, 0, 6, 4, 0 }, { 4 } },
+				{ { 1, 5, 3, 5, 7, 3 }, { 5 } } };
+
+		for (int[][] indices : INDICES) {
+			for (int i = 0; i < 6; ++i) {
+				mBufferVertex.put(VERTICES[indices[0][i]]);
+				mBufferNormal.put(NORMALS[indices[1][0]]);
+				mBufferTexPosition.put(TEXPOS[i]);
+			}
+		}
+
+		mBufferVertex.position(0);
+		mBufferNormal.position(0);
+		mBufferTexPosition.position(0);
 
 		// Simply set all matrices to identity.
 		android.opengl.Matrix.setIdentityM(mModelM, 0);
@@ -76,11 +103,15 @@ public final class ObjBox {
 	}
 
 	public final FloatBuffer getBufferNormals() {
-		return mNormalBuffer;
+		return mBufferNormal;
 	}
 
 	public final FloatBuffer getBufferVertices() {
-		return mVertexBuffer;
+		return mBufferVertex;
+	}
+
+	public final FloatBuffer getBufferTexPositions() {
+		return mBufferTexPosition;
 	}
 
 	/**
@@ -121,15 +152,6 @@ public final class ObjBox {
 		for (int i = 0; i < 16; ++i) {
 			mViewM[i] = viewM[i];
 			mProjM[i] = projM[i];
-		}
-	}
-
-	private final void setNormal(int face, float x, float y, float z) {
-		int i = face * VERTICES_PER_FACE * FLOATS_PER_VERTEX;
-		for (int j = 0; j < VERTICES_PER_FACE; ++j) {
-			mNormalBuffer.put(i + (j * FLOATS_PER_VERTEX) + 0, x);
-			mNormalBuffer.put(i + (j * FLOATS_PER_VERTEX) + 1, y);
-			mNormalBuffer.put(i + (j * FLOATS_PER_VERTEX) + 2, z);
 		}
 	}
 
@@ -176,53 +198,6 @@ public final class ObjBox {
 		android.opengl.Matrix.setIdentityM(mScaleM, 0);
 		android.opengl.Matrix.scaleM(mScaleM, 0, scale, scale, scale);
 		mRecalculateModelM = true;
-	}
-
-	private final void setSideCoordinates(int face, int is, int it, int iu,
-			float s1, float t1, float s2, float t2, float u) {
-		int i = face * VERTICES_PER_FACE * FLOATS_PER_VERTEX;
-
-		mVertexBuffer.put(i + is, s1);
-		mVertexBuffer.put(i + it, t1);
-		mVertexBuffer.put(i + iu, u);
-		i += FLOATS_PER_VERTEX;
-
-		mVertexBuffer.put(i + is, s1);
-		mVertexBuffer.put(i + it, t2);
-		mVertexBuffer.put(i + iu, u);
-		i += FLOATS_PER_VERTEX;
-
-		mVertexBuffer.put(i + is, s2);
-		mVertexBuffer.put(i + it, t1);
-		mVertexBuffer.put(i + iu, u);
-		i += FLOATS_PER_VERTEX;
-
-		mVertexBuffer.put(i + is, s1);
-		mVertexBuffer.put(i + it, t2);
-		mVertexBuffer.put(i + iu, u);
-		i += FLOATS_PER_VERTEX;
-
-		mVertexBuffer.put(i + is, s2);
-		mVertexBuffer.put(i + it, t2);
-		mVertexBuffer.put(i + iu, u);
-		i += FLOATS_PER_VERTEX;
-
-		mVertexBuffer.put(i + is, s2);
-		mVertexBuffer.put(i + it, t1);
-		mVertexBuffer.put(i + iu, u);
-	}
-
-	public final void setSize(float width, float height, float depth) {
-		float w = width / 2f;
-		float h = height / 2f;
-		float d = depth / 2f;
-
-		setSideCoordinates(0, 0, 1, 2, -w, h, w, -h, d);
-		setSideCoordinates(1, 0, 1, 2, w, h, -w, -h, -d);
-		setSideCoordinates(2, 0, 2, 1, -w, -d, w, d, h);
-		setSideCoordinates(3, 0, 2, 1, w, -d, -w, d, -h);
-		setSideCoordinates(4, 2, 1, 0, d, h, -d, -h, w);
-		setSideCoordinates(5, 2, 1, 0, -d, h, d, -h, -w);
 	}
 
 }

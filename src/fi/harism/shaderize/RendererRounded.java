@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.ViewGroup;
 
-public class RendererFlat extends Renderer {
+public class RendererRounded extends Renderer {
 
 	private Context mContext;
 	private final Shader mShaderCube = new Shader();
@@ -29,8 +29,9 @@ public class RendererFlat extends Renderer {
 	@Override
 	public void onSurfaceCreated() throws Exception {
 		String vertexSource, fragmentSource;
-		vertexSource = Utils.loadRawResource(mContext, R.raw.flat_cube_vs);
-		fragmentSource = Utils.loadRawResource(mContext, R.raw.flat_cube_fs);
+		vertexSource = Utils.loadRawResource(mContext, R.raw.rounded_cube_vs);
+		fragmentSource = Utils
+				.loadRawResource(mContext, R.raw.rounded_cube_fs);
 		mShaderCube.setProgram(vertexSource, fragmentSource);
 	}
 

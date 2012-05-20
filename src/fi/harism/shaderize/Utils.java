@@ -64,9 +64,10 @@ public class Utils {
 
 		int aPosition = shader.getHandle("aPosition");
 		int aNormal = shader.getHandle("aNormal");
-
-		for (ObjScene.StructBox structBox : scene.getBoxes()) {
-			final ObjBox box = structBox.mBox;
+		int aTexPosition = shader.getHandle("aTexPosition");
+		
+		for (ObjScene.StructCube structBox : scene.getCubes()) {
+			final ObjCube box = structBox.mCube;
 			box.calculate();
 
 			GLES20.glUniformMatrix4fv(uModelViewM, 1, false,
@@ -76,21 +77,23 @@ public class Utils {
 
 			GLES20.glUniform3fv(uColor, 1, structBox.mColor, 0);
 			GLES20.glUniform1f(uSaturation, structBox.mSaturation);
-
+			
 			FloatBuffer vertexBuffer = box.getBufferVertices();
-			vertexBuffer.position(0);
 			GLES20.glVertexAttribPointer(aPosition, 3, GLES20.GL_FLOAT, false,
 					0, vertexBuffer);
 			GLES20.glEnableVertexAttribArray(aPosition);
 
 			FloatBuffer normalBuffer = box.getBufferNormals();
-			normalBuffer.position(0);
 			GLES20.glVertexAttribPointer(aNormal, 3, GLES20.GL_FLOAT, false, 0,
 					normalBuffer);
 			GLES20.glEnableVertexAttribArray(aNormal);
-
-			GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0,
-					vertexBuffer.capacity() / 3);
+			
+			FloatBuffer texPositionBuffer = box.getBufferTexPositions();
+			GLES20.glVertexAttribPointer(aTexPosition, 2, GLES20.GL_FLOAT, false, 0,
+					texPositionBuffer);
+			GLES20.glEnableVertexAttribArray(aTexPosition);
+			
+			GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexBuffer.capacity() / 3);
 		}
 
 		GLES20.glDisable(GLES20.GL_DEPTH_TEST);

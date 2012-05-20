@@ -14,33 +14,33 @@ public class RendererLightning extends Renderer implements
 
 	private float mDiffuseFactor;
 
-	private final Shader mShaderLightning = new Shader();
+	private final Shader mShaderCube = new Shader();
 	private float mShininess;
 	private float mSpecularFactor;
 
 	@Override
 	public void onDestroy() {
 		mContext = null;
-		mShaderLightning.deleteProgram();
+		mShaderCube.deleteProgram();
 	}
 
 	@Override
 	public void onDrawFrame(Fbo fbo, ObjScene scene) {
 		fbo.bind();
 		fbo.bindTexture(0);
-		mShaderLightning.useProgram();
+		mShaderCube.useProgram();
 
-		int uAmbientFactor = mShaderLightning.getHandle("uAmbientFactor");
-		int uDiffuseFactor = mShaderLightning.getHandle("uDiffuseFactor");
-		int uSpecularFactor = mShaderLightning.getHandle("uSpecularFactor");
-		int uShininess = mShaderLightning.getHandle("uShininess");
+		int uAmbientFactor = mShaderCube.getHandle("uAmbientFactor");
+		int uDiffuseFactor = mShaderCube.getHandle("uDiffuseFactor");
+		int uSpecularFactor = mShaderCube.getHandle("uSpecularFactor");
+		int uShininess = mShaderCube.getHandle("uShininess");
 
 		GLES20.glUniform1f(uAmbientFactor, mAmbientFactor);
 		GLES20.glUniform1f(uDiffuseFactor, mDiffuseFactor);
 		GLES20.glUniform1f(uSpecularFactor, mSpecularFactor);
 		GLES20.glUniform1f(uShininess, mShininess * 16f);
 
-		Utils.renderScene(scene, mShaderLightning);
+		Utils.renderScene(scene, mShaderCube);
 	}
 
 	@Override
@@ -66,10 +66,10 @@ public class RendererLightning extends Renderer implements
 	public void onSurfaceCreated() throws Exception {
 		String vertexSource, fragmentSource;
 		vertexSource = Utils
-				.loadRawResource(mContext, R.raw.lightning_scene_vs);
+				.loadRawResource(mContext, R.raw.lightning_cube_vs);
 		fragmentSource = Utils.loadRawResource(mContext,
-				R.raw.lightning_scene_fs);
-		mShaderLightning.setProgram(vertexSource, fragmentSource);
+				R.raw.lightning_cube_fs);
+		mShaderCube.setProgram(vertexSource, fragmentSource);
 	}
 
 	@Override

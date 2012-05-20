@@ -41,6 +41,8 @@ harism@gmail.com</string>
     <string name="shader_dof_info">Depth of Field over flat rendered source.</string>
     <string name="shader_hex_name">Hexagonal Fill Shader</string>
     <string name="shader_hex_info">Hexagonal Filled flat rendered source.</string>
+    <string name="shader_bumpmap_name">Bump Map Shader</string>
+    <string name="shader_bumpmap_info">Bump Map flat rendered source.</string>
 
     <!-- Preference strings -->
     <string name="prefs_flat_saturation">Grayscale Saturation Value</string>

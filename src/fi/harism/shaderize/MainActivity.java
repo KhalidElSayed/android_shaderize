@@ -31,23 +31,23 @@ public class MainActivity extends Activity {
 	private final static int MENU_IDS[] = { R.id.menu_main, R.id.menu_shader,
 			R.id.menu_prefs };
 
-	private final static StructShader SHADERS[] = {
-			new StructShader(R.string.shader_flat_name,
+	private final static StructRenderer SHADERS[] = {
+			new StructRenderer(R.string.shader_flat_name,
 					R.string.shader_flat_info, RendererFlat.class.getName()),
-			new StructShader(R.string.shader_lightning_name,
+			new StructRenderer(R.string.shader_lightning_name,
 					R.string.shader_lightning_info,
 					RendererLightning.class.getName()),
-			new StructShader(R.string.shader_bloom_name,
-					R.string.shader_bloom_info, RendererBloom.class.getName()),
-			new StructShader(R.string.shader_fxaa_name,
-					R.string.shader_fxaa_info, RendererFxaa.class.getName()),
-			new StructShader(R.string.shader_dof_name,
-					R.string.shader_dof_info, RendererDof.class.getName()),
-			new StructShader(R.string.shader_hex_name,
-					R.string.shader_hex_info, RendererHex.class.getName()),
-			new StructShader(R.string.shader_rounded_name,
+			new StructRenderer(R.string.shader_rounded_name,
 					R.string.shader_rounded_info,
-					RendererRounded.class.getName()) };
+					RendererRounded.class.getName()),
+			new StructRenderer(R.string.shader_fxaa_name,
+					R.string.shader_fxaa_info, RendererFxaa.class.getName()),
+			new StructRenderer(R.string.shader_bloom_name,
+					R.string.shader_bloom_info, RendererBloom.class.getName()),
+			new StructRenderer(R.string.shader_dof_name,
+					R.string.shader_dof_info, RendererDof.class.getName()),
+			new StructRenderer(R.string.shader_hex_name,
+					R.string.shader_hex_info, RendererHex.class.getName()) };
 
 	private GLSurfaceView mGLSurfaceView;
 	private MainRenderer mMainRenderer;
@@ -235,7 +235,7 @@ public class MainActivity extends Activity {
 		 */
 		MenuShaderListener menuShaderListener = new MenuShaderListener();
 		ViewGroup viewGroup = (ViewGroup) findViewById(R.id.menu_shader_content);
-		for (StructShader shader : SHADERS) {
+		for (StructRenderer shader : SHADERS) {
 			TextView tv = (TextView) getLayoutInflater().inflate(
 					R.layout.menu_button, viewGroup, false);
 			tv.setId(shader.mTitleId);
@@ -273,7 +273,7 @@ public class MainActivity extends Activity {
 		mMainRenderer.setContext(null);
 	}
 
-	private void setShader(StructShader shader) throws Exception {
+	private void setShader(StructRenderer shader) throws Exception {
 		Renderer renderer = (Renderer) Class.forName(shader.mClassName)
 				.newInstance();
 		mTextSwitcherInfo.setText(getText(shader.mInfoId));
@@ -328,12 +328,12 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	private static class StructShader {
+	private static class StructRenderer {
 		public String mClassName;
 		public int mInfoId;
 		public int mTitleId;
 
-		public StructShader(int titleId, int infoId, String className) {
+		public StructRenderer(int titleId, int infoId, String className) {
 			mTitleId = titleId;
 			mInfoId = infoId;
 			mClassName = className;

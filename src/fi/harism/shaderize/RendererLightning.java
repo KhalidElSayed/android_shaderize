@@ -51,10 +51,13 @@ public class RendererLightning extends Renderer implements
 			break;
 		case R.string.prefs_key_lightning_diffuse_factor:
 			mDiffuseFactor = value;
+			break;
 		case R.string.prefs_key_lightning_specular_factor:
 			mSpecularFactor = value;
+			break;
 		case R.string.prefs_key_lightning_shininess:
 			mShininess = value;
+			break;
 		}
 	}
 
